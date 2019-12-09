@@ -7,6 +7,7 @@ _[Phiture](http://phiture.com) is a Berlin-based mobile growth consultancy worki
 ### Apple Searchads API Library in Python
 
 In order to facilitate the usage of the Apple Search Ads API Phiture's Engineers have built a library in Python which allows users to manage campaigns, ad groups, keywords and creative sets. This library only requires intermediate Python skills and therefore makes it possible not only for Engineers but also for Data Analysts and Apple Search Ads Consultants to work with it.  While the library is extensive it is not complete and users are encouraged to commit suggestions.
+The official link to the searchads campaign management api is https://developer.apple.com/documentation/search_ads/
 
 ## Setup
 
