@@ -8,16 +8,16 @@ _[Phiture](http://phiture.com) is a Berlin-based mobile growth consultancy worki
 
 In order to facilitate the usage of the Apple Search Ads API Phiture's Engineers have built a library in Python which allows users to manage campaigns, ad groups, keywords and creative sets. This library only requires intermediate Python skills and therefore makes it possible not only for Engineers but also for Data Analysts and Apple Search Ads Consultants to work with it.  While the library is extensive it is not complete and users are encouraged to commit suggestions.
 
-# Setup
+## Setup
 
 create a certs directory inside of your project folder, or create a different certs directory and specify it using the certificates_dir_path argument.
 
          api = SearchAdsAPI(123456, "cert.pem", "cert.key", certificates_dir_path="certs/",verbose=False)
 
 
-### Available Methods
+## Available Methods
 
-# Campaign Methods
+### Campaign Methods
 
 - Create a new campaign
 
@@ -41,7 +41,7 @@ create a certs directory inside of your project folder, or create a different ce
 
          res = api.delete_campaign(283767149)
 
-# Adgroup Methods
+### Adgroup Methods
 
 - Create a new adGroup inside of a campaign
 
@@ -73,7 +73,7 @@ create a certs directory inside of your project folder, or create a different ce
          res = delete_adgroup(campaign_id, adgroup_id)
 
 
-# Targeting Keyword Methods
+### Targeting Keyword Methods
 
 - Add new targeting keywords to an AdGroup
 
@@ -128,7 +128,7 @@ create a certs directory inside of your project folder, or create a different ce
                      ]
          res = api.update_targeting_keywords(290916652, 291017295, keywords)
 
-# Campaign Negative Keyword Methods
+### Campaign Negative Keyword Methods
 
 - Add new campaign negative keywords
 
@@ -163,7 +163,7 @@ create a certs directory inside of your project folder, or create a different ce
          keywords = [291225104]
          res = api.delete_campaign_negative_keywords(290916652, keywords)
 
-# Adgroup Negative Keyword Methods
+### Adgroup Negative Keyword Methods
 
 - Add new adgroup negative keywords
 
@@ -215,7 +215,7 @@ create a certs directory inside of your project folder, or create a different ce
          keyword_ids = [123456789]
          res = api.delete_adgroup_negative_keywords(290916652, 291017295, keyword_ids)
 
-# Creativeset Methods
+### Creativeset Methods
 
 - Fetch assets used with Creative Sets.
 
@@ -271,7 +271,7 @@ create a certs directory inside of your project folder, or create a different ce
 - Delete creative sets from a specified Adgroup
          res = api.delete_creativesets(campaign_id, adgroup_id, ids)
 
-# Reporting Methods
+### Reporting Methods
 
 - Get reports on campaigns within a specific org.
 
@@ -293,7 +293,7 @@ create a certs directory inside of your project folder, or create a different ce
 
          row, grandTotals = api.get_searcherms_report_by_date(123456789,"2019-05-01", "2019-05-07",limit=0)
 
-# Geo Search
+### Geo Search
 
 - Search Adminareas
 
