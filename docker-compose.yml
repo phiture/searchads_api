@@ -1,0 +1,11 @@
+version: "3.2"
+
+services:
+    pypiserver:
+        image: pypiserver/pypiserver:latest
+        volumes:
+            - ./auth:/data/auth
+            - ./packages:/data/packages
+        command: -P /data/auth/.htpasswd -a update,download,list /data/packages
+        ports:
+            - "9090:8080"
