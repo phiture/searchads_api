@@ -830,12 +830,12 @@ class SearchAdsAPI:
             "Status": "PAUSED"
         }]
         """
-        res = self.
-        api_call("campaigns/{}/adgroups/{}/negativekeywords/bulk"
-                 .format(campaign_id,
-                         adgroup_id),
-                 json_data=keywords,
-                 method="POST")
+        res = self.api_call(
+            "campaigns/{}/adgroups/{}/negativekeywords/bulk"
+            .format(campaign_id,
+                    adgroup_id),
+            json_data=keywords,
+            method="POST")
         return res
 
     def get_adgroup_negative_keyword(self,
@@ -878,11 +878,11 @@ class SearchAdsAPI:
          }
         ]
         """
-        res = self.api_call("campaigns/{}/adgroups/{}/negativekeywords/bulk"
-                            .format(campaign_id,
-                                    adgroup_id),
-                            json_data=keywords,
-                            method="PUT")
+        res = self.api_call("campaigns/{}/adgroups/{}/negativekeywords/bulk".format(
+            campaign_id,
+            adgroup_id),
+            json_data=keywords,
+            method="PUT")
         return res
 
     def delete_adgroup_negative_keywords(self,
