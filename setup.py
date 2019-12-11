@@ -4,7 +4,7 @@ import setuptools
 setup(
     name='searchads_api',
     description='Apple Searchads API non-official python library',
-    version='0.1',
+    version='0.2',
     url='https://github.com/phiture/searchads_api',
     author='Abdul Majeed Alkattan',
     author_email='alkattan@phiture.com',
