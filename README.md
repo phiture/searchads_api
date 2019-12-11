@@ -25,6 +25,7 @@ create a certs directory inside of your project folder, or create a different ce
          res = api.create_campaign(1433439534, ['AU'], "test", 1, 1, "EUR")
 
 - Find campaigns using a conditions list
+
          res = api.find_campaigns(conditions=[{"field": "countriesOrRegions","operator": "CONTAINS_ALL","values": ["US", "CA"]}])
 
 - Get a specific campaign
@@ -36,6 +37,7 @@ create a certs directory inside of your project folder, or create a different ce
          res = api.get_campaigns(limit=0)
 
 - Update a campaign
+
          res = update_campaign(campaign_id, countries=None, campaign_name="Christmas Campaign 2019", budget=None, daily_budget=None, curruncy=None, status=None, adamId=None)
 
 - Delete campaign
@@ -66,11 +68,13 @@ create a certs directory inside of your project folder, or create a different ce
          res = api.get_adgroups(290916652, 21321323)
 
 - Update an Adgroup
+
          res = update_adgroup(campaign_id, adgroup_id, adgroup_name=None,                             cpa_goal=None, currency=None,
                        cpc_bid=None, start_time=None, end_time=None, automated_keywords_opt_in=False, age=None, gender=None, device_class=None,
                        day_part=None, adminArea=None, locality=None, appDownloaders=None)
 
 - Delete an Adgroup
+
          res = delete_adgroup(campaign_id, adgroup_id)
 
 
@@ -98,6 +102,7 @@ create a certs directory inside of your project folder, or create a different ce
          res = api.add_targeting_keywords(290916652,291017295,keywords)
 
 - Fetch keywords used in ad groups.
+
          res = find_targeting_keywords(campaign_id, adgroup_id, sort_field="id", sort_order="ASCENDING", conditions=[], offset=0, limit=1000)
 
 - Get one targeting keyword
@@ -161,6 +166,7 @@ create a certs directory inside of your project folder, or create a different ce
          res = api.update_campaign_negative_keywords(290916652, keywords)
 
 - Delete campaign negative keywords
+
          keywords = [291225104]
          res = api.delete_campaign_negative_keywords(290916652, keywords)
 
