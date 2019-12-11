@@ -686,14 +686,32 @@ class SearchAdsAPI:
 
     def get_targeting_keywords(self,
                                campaign_id,
-                               adgroup_id):
+                               adgroup_id,
+                               limit=1000,
+                               offset=0):
         """
         Fetches all targeting keywords used in ad groups.
         """
-        res = self.api_call(
-            "campaigns/{}/adgroups/{}/targetingkeywords/"
-            .format(campaign_id, adgroup_id),
-            method="GET")
+        res = []
+        result = None
+        if limit == 0:
+            li = 1000
+        else:
+            li = limit
+        while True:
+            result = self.api_call(
+                "campaigns/{}/adgroups/{}/targetingkeywords/".format(
+                    campaign_id,
+                    adgroup_id),
+                method="GET",
+                limit=li,
+                offset=offset)
+            res.extend(result["data"])
+            res_len = len(res)
+            if res_len == limit or result["pagination"]["totalResults"] == res_len:
+                break
+            print(result["pagination"], len(result["data"]))
+            offset += result["pagination"]["itemsPerPage"]
         return res
 
     def update_targeting_keywords(self,
