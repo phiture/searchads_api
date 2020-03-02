@@ -530,6 +530,7 @@ class SearchAdsAPI:
                     }
             }
         """
+        dimensions = None
         if (gender is not None
             or device_class is not None
             or day_part is not None
@@ -744,6 +745,7 @@ class SearchAdsAPI:
         return res
 
     # Campaign Negative Keyword Methods
+
     def add_campaign_negative_keywords(self, campaign_id, keywords):
         """
         Creates negative keywords to use in a specific ad group.
@@ -1424,10 +1426,10 @@ class SearchAdsAPI:
                 grandTotals.extend(
                     res["data"]["reportingDataResponse"]["grandTotals"])
             res_len = len(row)
-            if limit == 0:
-                limit = res["pagination"]["totalResults"]
+            
+            offset = len(row)
                 # print(limit)
-            if res_len >= (limit - offset) or res["pagination"]["totalResults"] == res_len:
+            if res_len == limit or res_len >= res["pagination"]["totalResults"]:
                 break
         if return_grand_totals:
             return row, grandTotals
