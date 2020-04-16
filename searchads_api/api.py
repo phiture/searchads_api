@@ -11,6 +11,7 @@ class SearchAdsAPI:
                  pem,
                  key,
                  certificates_dir_path="certs/",
+                 api_version="v3",
                  session=None,
                  verbose=False):
         """
@@ -22,6 +23,7 @@ class SearchAdsAPI:
         self.session = session
         self.path = certificates_dir_path
         self.verbose = verbose
+        self.api_version = api_version
 
     # API Function
     def api_call(self,
@@ -29,8 +31,7 @@ class SearchAdsAPI:
                  headers={},
                  json_data={},
                  params={},
-                 method="GET",
-                 api_version='v2',
+                 method="GET", 
                  limit=1000,
                  offset=0):
         """
@@ -61,7 +62,7 @@ class SearchAdsAPI:
             kwargs['headers']["Authorization"] = "orgId={org_id}".format(
                 org_id=self.org_id)
         kwargs["params"].update(params)
-        api_endpoint = "{}/{}".format(api_version, api_endpoint)
+        api_endpoint = "{}/{}".format(self.api_version, api_endpoint)
         url = url.format(api_endpoint)
         try:
             if method == "get" or method == "GET":
