@@ -88,7 +88,7 @@ class SearchAdsAPI:
                         campaign_name,
                         budget,
                         daily_budget,
-                        curruncy):
+                        currency):
         """
         Creates a campaign to promote an app.
         """
@@ -97,11 +97,11 @@ class SearchAdsAPI:
             "name": campaign_name,
             "budgetAmount": {
                 "amount": "{}".format(budget),
-                "currency": curruncy
+                "currency": currency
             },
             "dailyBudgetAmount": {
                 "amount": "{}".format(daily_budget),
-                "currency": curruncy
+                "currency": currency
             },
             "adamId": app_id,
             "countriesOrRegions": countries
@@ -1304,7 +1304,8 @@ class SearchAdsAPI:
                                     return_row_totals=True,
                                     return_grand_totals=True,
                                     offset=0,
-                                    limit=1000):
+                                    limit=1000,
+                                    **kwargs):
         """
         Get reports on targeting keywords within a specific campaign.
         """
