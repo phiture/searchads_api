@@ -31,7 +31,7 @@ class SearchAdsAPI:
                  headers={},
                  json_data={},
                  params={},
-                 method="GET", 
+                 method="GET",
                  limit=1000,
                  offset=0):
         """
@@ -64,22 +64,19 @@ class SearchAdsAPI:
         kwargs["params"].update(params)
         api_endpoint = "{}/{}".format(self.api_version, api_endpoint)
         url = url.format(api_endpoint)
-        try:
-            if method == "get" or method == "GET":
-                req = caller.get(url, **kwargs)
-            elif method == "post" or method == "POST":
-                req = caller.post(url, **kwargs)
-            elif method == "put" or method == "PUT":
-                req = caller.put(url, **kwargs)
-            elif method == "delete" or method == "DELETE":
-                req = caller.delete(url, **kwargs)
-            if self.verbose:
-                print(req.url)
-                print(req.text)
-            return req.json()
-        except Exception as e:
-            print(str(e), url)
-            return None
+        req = None
+        if method == "get" or method == "GET":
+            req = caller.get(url, **kwargs)
+        elif method == "post" or method == "POST":
+            req = caller.post(url, **kwargs)
+        elif method == "put" or method == "PUT":
+            req = caller.put(url, **kwargs)
+        elif method == "delete" or method == "DELETE":
+            req = caller.delete(url, **kwargs)
+        if self.verbose and req:
+            print(req.url)
+            print(req.text)
+        return req.json()
 
     # Campaign Methods
     def create_campaign(self,
@@ -1444,7 +1441,7 @@ class SearchAdsAPI:
                 grandTotals.extend(
                     res["data"]["reportingDataResponse"]["grandTotals"])
             res_len = len(row)
-            
+
             offset = len(row)
                 # print(limit)
             if res_len == limit or res_len >= res["pagination"]["totalResults"]:
