@@ -76,6 +76,8 @@ class SearchAdsAPI:
         if self.verbose and req:
             print(req.url)
             print(req.text)
+        # Raising errors to show errors
+        req.raise_for_status()
         return req.json()
 
     # Campaign Methods
