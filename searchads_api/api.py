@@ -186,6 +186,31 @@ class SearchAdsAPI:
             offset += result["pagination"]["itemsPerPage"]
         return res
 
+    def get_origins(self):
+        """
+        Get User ACL Response Example
+        {
+         "data": [
+         {
+         "currency": "USD",
+         "orgId": <OrgID>,
+         "orgName": "<OrgName1>",
+         "paymentModel": "LOC",
+         "roleNames": ["Admin"]
+         },
+         {
+         "currency": "USD",
+         "orgId": <OrgID>;,
+         "orgName": "<OrgName2>",
+         "paymentModel": "LOC",
+         "roleNames": ["Admin"]
+         }],
+        }
+        """
+        return self.api_call(
+            api_endpoint="acls"
+        )
+
     def update_campaign(self,
                         campaign_id,
                         countries=None,
