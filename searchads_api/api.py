@@ -31,7 +31,7 @@ class SearchAdsAPI:
                  headers={},
                  json_data={},
                  params={},
-                 method="GET", 
+                 method="GET",
                  limit=1000,
                  offset=0):
         """
@@ -64,22 +64,21 @@ class SearchAdsAPI:
         kwargs["params"].update(params)
         api_endpoint = "{}/{}".format(self.api_version, api_endpoint)
         url = url.format(api_endpoint)
-        try:
-            if method == "get" or method == "GET":
-                req = caller.get(url, **kwargs)
-            elif method == "post" or method == "POST":
-                req = caller.post(url, **kwargs)
-            elif method == "put" or method == "PUT":
-                req = caller.put(url, **kwargs)
-            elif method == "delete" or method == "DELETE":
-                req = caller.delete(url, **kwargs)
-            if self.verbose:
-                print(req.url)
-                print(req.text)
-            return req.json()
-        except Exception as e:
-            print(str(e), url)
-            return None
+        req = None
+        if method == "get" or method == "GET":
+            req = caller.get(url, **kwargs)
+        elif method == "post" or method == "POST":
+            req = caller.post(url, **kwargs)
+        elif method == "put" or method == "PUT":
+            req = caller.put(url, **kwargs)
+        elif method == "delete" or method == "DELETE":
+            req = caller.delete(url, **kwargs)
+        if self.verbose and req:
+            print(req.url)
+            print(req.text)
+        # Raising errors to show errors
+        req.raise_for_status()
+        return req.json()
 
     # Campaign Methods
     def create_campaign(self,
@@ -88,7 +87,7 @@ class SearchAdsAPI:
                         campaign_name,
                         budget,
                         daily_budget,
-                        curruncy):
+                        currency):
         """
         Creates a campaign to promote an app.
         """
@@ -97,11 +96,11 @@ class SearchAdsAPI:
             "name": campaign_name,
             "budgetAmount": {
                 "amount": "{}".format(budget),
-                "currency": curruncy
+                "currency": currency
             },
             "dailyBudgetAmount": {
                 "amount": "{}".format(daily_budget),
-                "currency": curruncy
+                "currency": currency
             },
             "adamId": app_id,
             "countriesOrRegions": countries
@@ -186,6 +185,31 @@ class SearchAdsAPI:
             #print(result["pagination"], len(result["data"]))
             offset += result["pagination"]["itemsPerPage"]
         return res
+
+    def get_origins(self):
+        """
+        Get User ACL Response Example
+        {
+         "data": [
+         {
+         "currency": "USD",
+         "orgId": <OrgID>,
+         "orgName": "<OrgName1>",
+         "paymentModel": "LOC",
+         "roleNames": ["Admin"]
+         },
+         {
+         "currency": "USD",
+         "orgId": <OrgID>;,
+         "orgName": "<OrgName2>",
+         "paymentModel": "LOC",
+         "roleNames": ["Admin"]
+         }],
+        }
+        """
+        return self.api_call(
+            api_endpoint="acls"
+        )
 
     def update_campaign(self,
                         campaign_id,
@@ -1146,7 +1170,8 @@ class SearchAdsAPI:
                                      return_row_totals=True,
                                      return_grand_totals=True,
                                      offset=0,
-                                     limit=1000):
+                                     limit=1000,
+                                     **kwargs):
         """
         Get reports on campaigns within a specific org.
         {
@@ -1206,7 +1231,8 @@ class SearchAdsAPI:
                               return_row_totals=return_row_totals,
                               return_grand_totals=return_grand_totals,
                               offset=offset,
-                              limit=limit)
+                              limit=limit,
+                              **kwargs)
 
     def get_adgroups_report_by_date(self,
                                     campaignId,
@@ -1219,7 +1245,8 @@ class SearchAdsAPI:
                                     return_row_totals=True,
                                     return_grand_totals=True,
                                     offset=0,
-                                    limit=1000):
+                                    limit=1000,
+                                    **kwargs):
         """
         Get reports on adGroups within a specific campaign.
         {
@@ -1261,7 +1288,8 @@ class SearchAdsAPI:
                               return_row_totals=return_row_totals,
                               return_grand_totals=return_grand_totals,
                               offset=offset,
-                              limit=limit)
+                              limit=limit,
+                              **kwargs)
 
     def get_creativesets_report_by_date(self,
                                         campaignId,
@@ -1274,7 +1302,8 @@ class SearchAdsAPI:
                                         return_row_totals=True,
                                         return_grand_totals=True,
                                         offset=0,
-                                        limit=1000):
+                                        limit=1000,
+                                        **kwargs):
         """
         Fetches reports on Creative Sets used within a campaign.
         conditions example
@@ -1291,7 +1320,8 @@ class SearchAdsAPI:
                               return_row_totals=return_row_totals,
                               return_grand_totals=return_grand_totals,
                               offset=offset,
-                              limit=limit)
+                              limit=limit,
+                              **kwargs)
 
     def get_keywords_report_by_date(self,
                                     campaignId,
@@ -1304,7 +1334,8 @@ class SearchAdsAPI:
                                     return_row_totals=True,
                                     return_grand_totals=True,
                                     offset=0,
-                                    limit=1000):
+                                    limit=1000,
+                                    **kwargs):
         """
         Get reports on targeting keywords within a specific campaign.
         """
@@ -1319,7 +1350,8 @@ class SearchAdsAPI:
                               return_row_totals=return_row_totals,
                               return_grand_totals=return_grand_totals,
                               offset=offset,
-                              limit=limit)
+                              limit=limit,
+                              **kwargs)
 
     def get_searchterms_report_by_date(self,
                                        campaignId,
@@ -1332,7 +1364,8 @@ class SearchAdsAPI:
                                        return_row_totals=True,
                                        return_grand_totals=True,
                                        offset=0,
-                                       limit=1000):
+                                       limit=1000,
+                                       **kwargs):
         """
         Get reports on targeting keywords within a specific campaign.
         """
@@ -1347,7 +1380,8 @@ class SearchAdsAPI:
                               return_row_totals=return_row_totals,
                               return_grand_totals=return_grand_totals,
                               offset=offset,
-                              limit=limit)
+                              limit=limit,
+                              **kwargs)
 
     def _get_data(self,
                   data_type,
@@ -1362,7 +1396,8 @@ class SearchAdsAPI:
                   offset,
                   limit,
                   campaignId=None,
-                  group_by=None):
+                  group_by=None,
+                  **kwargs):
         row = []
         grandTotals = []
         if limit == 0:
@@ -1395,6 +1430,12 @@ class SearchAdsAPI:
                 data["groupBy"] = [
                     group_by
                 ]
+            if kwargs:
+                data = {
+                    **data,
+                    **kwargs
+                }
+
             if data_type == "campaigns":
                 res = self.api_call("reports/campaigns",
                                     json_data=data, method="POST")
@@ -1427,7 +1468,7 @@ class SearchAdsAPI:
                 grandTotals.extend(
                     res["data"]["reportingDataResponse"]["grandTotals"])
             res_len = len(row)
-            
+
             offset = len(row)
                 # print(limit)
             if res_len == limit or res_len >= res["pagination"]["totalResults"]:
