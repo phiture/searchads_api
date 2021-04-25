@@ -4,7 +4,7 @@ import setuptools
 setup(
     name='searchads_api',
     description='Apple Searchads API non-official python library',
-    version='0.5',
+    version='0.6',
     url='https://github.com/phiture/searchads_api',
     author='Abdul Majeed Alkattan',
     author_email='alkattan@phiture.com',
@@ -22,6 +22,7 @@ _[Phiture](http://phiture.com) is a Berlin-based mobile growth consultancy worki
 In order to facilitate the usage of the Apple Search Ads API Phiture's Engineers have built a library in Python which allows users to manage campaigns, ad groups, keywords and creative sets. This library only requires intermediate Python skills and therefore makes it possible not only for Engineers but also for Data Analysts and Apple Search Ads Consultants to work with it.  While the library is extensive it is not complete and users are encouraged to commit suggestions.
 
 Read the docs on github.
+Added granularity level reports
     """,
     
     )

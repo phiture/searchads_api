@@ -1145,6 +1145,7 @@ class SearchAdsAPI:
                                      return_records_with_no_metrics=True,
                                      return_row_totals=True,
                                      return_grand_totals=True,
+                                     granularity=None,
                                      offset=0,
                                      limit=1000):
         """
@@ -1205,6 +1206,7 @@ class SearchAdsAPI:
                               no_metrics=return_records_with_no_metrics,
                               return_row_totals=return_row_totals,
                               return_grand_totals=return_grand_totals,
+                              granularity=granularity,
                               offset=offset,
                               limit=limit)
 
@@ -1218,6 +1220,7 @@ class SearchAdsAPI:
                                     return_records_with_no_metrics=True,
                                     return_row_totals=True,
                                     return_grand_totals=True,
+                                    granularity=None,
                                     offset=0,
                                     limit=1000):
         """
@@ -1260,6 +1263,7 @@ class SearchAdsAPI:
                               no_metrics=return_records_with_no_metrics,
                               return_row_totals=return_row_totals,
                               return_grand_totals=return_grand_totals,
+                              granularity=granularity,
                               offset=offset,
                               limit=limit)
 
@@ -1273,6 +1277,7 @@ class SearchAdsAPI:
                                         return_records_with_no_metrics=True,
                                         return_row_totals=True,
                                         return_grand_totals=True,
+                                        granularity=None,
                                         offset=0,
                                         limit=1000):
         """
@@ -1290,6 +1295,7 @@ class SearchAdsAPI:
                               no_metrics=return_records_with_no_metrics,
                               return_row_totals=return_row_totals,
                               return_grand_totals=return_grand_totals,
+                              granularity=granularity,
                               offset=offset,
                               limit=limit)
 
@@ -1303,6 +1309,7 @@ class SearchAdsAPI:
                                     return_records_with_no_metrics=True,
                                     return_row_totals=True,
                                     return_grand_totals=True,
+                                    granularity=None,
                                     offset=0,
                                     limit=1000):
         """
@@ -1318,6 +1325,7 @@ class SearchAdsAPI:
                               no_metrics=return_records_with_no_metrics,
                               return_row_totals=return_row_totals,
                               return_grand_totals=return_grand_totals,
+                              granularity=granularity,
                               offset=offset,
                               limit=limit)
 
@@ -1331,6 +1339,7 @@ class SearchAdsAPI:
                                        return_records_with_no_metrics=False,
                                        return_row_totals=True,
                                        return_grand_totals=True,
+                                       granularity=None,
                                        offset=0,
                                        limit=1000):
         """
@@ -1346,6 +1355,7 @@ class SearchAdsAPI:
                               no_metrics=return_records_with_no_metrics,
                               return_row_totals=return_row_totals,
                               return_grand_totals=return_grand_totals,
+                              granularity=granularity,
                               offset=offset,
                               limit=limit)
 
@@ -1361,14 +1371,23 @@ class SearchAdsAPI:
                   return_grand_totals,
                   offset,
                   limit,
+                  granularity=None,
                   campaignId=None,
                   group_by=None):
+        """
+        Request driver
+        granularity Possible values: MONTHLY, WEEKLY, DAILY, HOURLY
+        """
         row = []
         grandTotals = []
         if limit == 0:
             li = 1000
         else:
             li = limit
+        if granularity is not None:
+            if return_grand_totals == True or return_row_totals == True:
+                print("return_grand_totals and return_row_totals must be False")
+                return None
         while True:
             data = {
                 "startTime": start_date,
@@ -1391,6 +1410,8 @@ class SearchAdsAPI:
                 "returnRowTotals": return_row_totals,
                 "returnGrandTotals": return_grand_totals
             }
+            if granularity is not None:
+                data["granularity"] = granularity
             if group_by is not None:
                 data["groupBy"] = [
                     group_by
