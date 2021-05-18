@@ -1221,6 +1221,7 @@ class SearchAdsAPI:
                                     return_row_totals=True,
                                     return_grand_totals=True,
                                     granularity=None,
+                                    group_by=None,
                                     offset=0,
                                     limit=1000):
         """
@@ -1264,6 +1265,7 @@ class SearchAdsAPI:
                               return_row_totals=return_row_totals,
                               return_grand_totals=return_grand_totals,
                               granularity=granularity,
+                              group_by=group_by,
                               offset=offset,
                               limit=limit)
 
@@ -1278,6 +1280,7 @@ class SearchAdsAPI:
                                         return_row_totals=True,
                                         return_grand_totals=True,
                                         granularity=None,
+                                        group_by=None,
                                         offset=0,
                                         limit=1000):
         """
@@ -1296,6 +1299,7 @@ class SearchAdsAPI:
                               return_row_totals=return_row_totals,
                               return_grand_totals=return_grand_totals,
                               granularity=granularity,
+                              group_by=group_by,
                               offset=offset,
                               limit=limit)
 
@@ -1310,6 +1314,7 @@ class SearchAdsAPI:
                                     return_row_totals=True,
                                     return_grand_totals=True,
                                     granularity=None,
+                                    group_by=None,
                                     offset=0,
                                     limit=1000):
         """
@@ -1326,6 +1331,7 @@ class SearchAdsAPI:
                               return_row_totals=return_row_totals,
                               return_grand_totals=return_grand_totals,
                               granularity=granularity,
+                              group_by=group_by,
                               offset=offset,
                               limit=limit)
 
@@ -1340,6 +1346,7 @@ class SearchAdsAPI:
                                        return_row_totals=True,
                                        return_grand_totals=True,
                                        granularity=None,
+                                       group_by=None,
                                        offset=0,
                                        limit=1000):
         """
@@ -1356,6 +1363,7 @@ class SearchAdsAPI:
                               return_row_totals=return_row_totals,
                               return_grand_totals=return_grand_totals,
                               granularity=granularity,
+                              group_by=group_by,
                               offset=offset,
                               limit=limit)
 
