@@ -8,20 +8,16 @@ import random
 class SearchAdsAPI:
     def __init__(self,
                  org_id,
-                 pem,
-                 key,
-                 certificates_dir_path="certs/",
-                 api_version="v3",
+                 access_token,
+                 api_version="v4",
                  session=None,
                  verbose=False):
         """
         Init API instance
         """
         self.org_id = org_id
-        self.pem = pem
-        self.key = key
+        self.access_token = access_token
         self.session = session
-        self.path = certificates_dir_path
         self.verbose = verbose
         self.api_version = api_version
 
@@ -31,7 +27,7 @@ class SearchAdsAPI:
                  headers={},
                  json_data={},
                  params={},
-                 method="GET", 
+                 method="GET",
                  limit=1000,
                  offset=0):
         """
@@ -42,15 +38,10 @@ class SearchAdsAPI:
             caller = requests
         else:
             caller = self.session
-        pem = self.path + self.pem
-        key = self.path + self.key
         kwargs = {
-            "cert": (
-                pem,
-                key
-            ),
-            "headers": headers,
+            "headers": {'Authorization': "Bearer {}".format(self.access_token)},
         }
+
         if json_data:
             kwargs['json'] = json_data
         kwargs["params"] = dict()
@@ -59,25 +50,27 @@ class SearchAdsAPI:
         if offset:
             kwargs['params']['offset'] = offset
         if self.org_id:
-            kwargs['headers']["Authorization"] = "orgId={org_id}".format(
+            kwargs['headers']["X-AP-Context"] = "orgId={org_id}".format(
                 org_id=self.org_id)
         kwargs["params"].update(params)
         api_endpoint = "{}/{}".format(self.api_version, api_endpoint)
         url = url.format(api_endpoint)
-        
-        if method == "get" or method == "GET":
-            req = caller.get(url, **kwargs)
-        elif method == "post" or method == "POST":
-            req = caller.post(url, **kwargs)
-        elif method == "put" or method == "PUT":
-            req = caller.put(url, **kwargs)
-        elif method == "delete" or method == "DELETE":
-            req = caller.delete(url, **kwargs)
-        if self.verbose:
-            print(req.url)
-            print(req.text)
-        return req.json()
-        
+        try:
+            if method == "get" or method == "GET":
+                req = caller.get(url, **kwargs)
+            elif method == "post" or method == "POST":
+                req = caller.post(url, **kwargs)
+            elif method == "put" or method == "PUT":
+                req = caller.put(url, **kwargs)
+            elif method == "delete" or method == "DELETE":
+                req = caller.delete(url, **kwargs)
+            if self.verbose:
+                print(req.url)
+                print(req.text)
+            return req.json()
+        except Exception as e:
+            print(str(e), url)
+            return None
 
     # Campaign Methods
     def create_campaign(self,
@@ -181,7 +174,7 @@ class SearchAdsAPI:
             res_len = len(res)
             if res_len == limit or result["pagination"]["totalResults"] == res_len:
                 break
-            #print(result["pagination"], len(result["data"]))
+            # print(result["pagination"], len(result["data"]))
             offset += result["pagination"]["itemsPerPage"]
         return res
 
@@ -263,7 +256,7 @@ class SearchAdsAPI:
                        appDownloaders=None):
         """
         Creates an ad group as part of a campaign.
-        {  
+        {
        "id": <id>,
         "campaignId": <campaignId>,
         "name": "<name>",
@@ -331,10 +324,10 @@ class SearchAdsAPI:
         """
         dimensions = {}
         if (gender is not None
-            or device_class is not None
-            or day_part is not None
-            or adminArea is not None
-            or locality is not None
+                or device_class is not None
+                or day_part is not None
+                or adminArea is not None
+                or locality is not None
                 or appDownloaders is not None):
             dimensions = {
                 "age": {"included": age},
@@ -413,8 +406,8 @@ class SearchAdsAPI:
 
     def get_adgroups(self, campaign_id, limit=0, offset=0):
         """
-        Returns all adGroups for a specified campaign. 
-        Optional pagination specifies how many records to return 
+        Returns all adGroups for a specified campaign.
+        Optional pagination specifies how many records to return
         per page (the default is 20).
         """
         res = []
@@ -531,10 +524,10 @@ class SearchAdsAPI:
         """
         dimensions = None
         if (gender is not None
-            or device_class is not None
-            or day_part is not None
-            or adminArea is not None
-            or locality is not None
+                or device_class is not None
+                or day_part is not None
+                or adminArea is not None
+                or locality is not None
                 or appDownloaders is not None):
             dimensions = {
                 "age": {"included": age},
@@ -592,7 +585,7 @@ class SearchAdsAPI:
         """
         res = self.api_call(
             "campaigns/{}/adgroups/{}"
-            .format(campaign_id, adgroup_id),
+                .format(campaign_id, adgroup_id),
             method="DELETE")
         return res
 
@@ -851,8 +844,8 @@ class SearchAdsAPI:
         """
         res = self.api_call(
             "campaigns/{}/adgroups/{}/negativekeywords/bulk"
-            .format(campaign_id,
-                    adgroup_id),
+                .format(campaign_id,
+                        adgroup_id),
             json_data=keywords,
             method="POST")
         return res
@@ -920,7 +913,7 @@ class SearchAdsAPI:
                             json_data=keyword_ids, method="POST")
         return res
 
-   ## Creativeset Methods ##
+    ## Creativeset Methods ##
     def get_creativesets_assets(self,
                                 adam_id,
                                 countries_or_regions,
@@ -974,8 +967,8 @@ class SearchAdsAPI:
         }
         res = self.api_call(
             "campaigns/{}/adgroups/{}/adgroupcreativesets/creativesets"
-            .format(campaign_id,
-                    adgroup_id),
+                .format(campaign_id,
+                        adgroup_id),
             json_data=data,
             method="POST")
         return res
@@ -1025,9 +1018,9 @@ class SearchAdsAPI:
                                   offset=0):
         """
         Fetches all Creative Sets assigned to ad groups.
-        Use this endpoint to find all Creative Sets assigned to an ad group. 
-        Use the corresponding campaignId of the ad group in the URI. 
-        Use the id field with its corresponding ad group as a value 
+        Use this endpoint to find all Creative Sets assigned to an ad group.
+        Use the corresponding campaignId of the ad group in the URI.
+        Use the id field with its corresponding ad group as a value
         in the request payload.
         conditions example:
         conditions = [{
@@ -1055,7 +1048,7 @@ class SearchAdsAPI:
         }
         res = self.api_call(
             "campaigns/{}/adgroupcreativesets/find"
-            .format(campaign_id),
+                .format(campaign_id),
             json_data=data,
             method="POST")
         return res
@@ -1066,7 +1059,7 @@ class SearchAdsAPI:
                           offset=0):
         """
         Fetches all Creative Sets assigned to an organization.
-        Use this endpoint to find all Creative Sets assigned to an organization. 
+        Use this endpoint to find all Creative Sets assigned to an organization.
         Use the name or id field with its corresponding campaignID as a value in
         the request payload.
         conditions={
@@ -1126,7 +1119,7 @@ class SearchAdsAPI:
             ids = [ids]
         res = self.api_call(
             "campaigns/{}/adgroups/{}/adgroupcreativesets/delete/bulk"
-            .format(campaign_id, adgroup_id),
+                .format(campaign_id, adgroup_id),
             json_data=ids,
             method="POST"
         )
@@ -1219,7 +1212,6 @@ class SearchAdsAPI:
                                     return_row_totals=True,
                                     return_grand_totals=True,
                                     granularity=None,
-                                    group_by=None,
                                     offset=0,
                                     limit=1000):
         """
@@ -1263,7 +1255,6 @@ class SearchAdsAPI:
                               return_row_totals=return_row_totals,
                               return_grand_totals=return_grand_totals,
                               granularity=granularity,
-                              group_by=group_by,
                               offset=offset,
                               limit=limit)
 
@@ -1278,7 +1269,6 @@ class SearchAdsAPI:
                                         return_row_totals=True,
                                         return_grand_totals=True,
                                         granularity=None,
-                                        group_by=None,
                                         offset=0,
                                         limit=1000):
         """
@@ -1297,7 +1287,6 @@ class SearchAdsAPI:
                               return_row_totals=return_row_totals,
                               return_grand_totals=return_grand_totals,
                               granularity=granularity,
-                              group_by=group_by,
                               offset=offset,
                               limit=limit)
 
@@ -1312,7 +1301,6 @@ class SearchAdsAPI:
                                     return_row_totals=True,
                                     return_grand_totals=True,
                                     granularity=None,
-                                    group_by=None,
                                     offset=0,
                                     limit=1000):
         """
@@ -1329,7 +1317,6 @@ class SearchAdsAPI:
                               return_row_totals=return_row_totals,
                               return_grand_totals=return_grand_totals,
                               granularity=granularity,
-                              group_by=group_by,
                               offset=offset,
                               limit=limit)
 
@@ -1344,7 +1331,6 @@ class SearchAdsAPI:
                                        return_row_totals=True,
                                        return_grand_totals=True,
                                        granularity=None,
-                                       group_by=None,
                                        offset=0,
                                        limit=1000):
         """
@@ -1361,7 +1347,6 @@ class SearchAdsAPI:
                               return_row_totals=return_row_totals,
                               return_grand_totals=return_grand_totals,
                               granularity=granularity,
-                              group_by=group_by,
                               offset=offset,
                               limit=limit)
 
@@ -1454,9 +1439,9 @@ class SearchAdsAPI:
                 grandTotals.extend(
                     res["data"]["reportingDataResponse"]["grandTotals"])
             res_len = len(row)
-            
+
             offset = len(row)
-                # print(limit)
+            # print(limit)
             if res_len == limit or res_len >= res["pagination"]["totalResults"]:
                 break
         if return_grand_totals:
@@ -1472,7 +1457,7 @@ class SearchAdsAPI:
                    offset=0):
         """
         Returns a list of geo locations according to the entity type and the country code.
-        entity: The country, adminArea, or Locality locations available for targeting. 
+        entity: The country, adminArea, or Locality locations available for targeting.
         """
         params = {"query": word,
                   "countrycode": country_code,
@@ -1508,12 +1493,12 @@ class SearchAdsAPI:
         """
         Gets geo location details based on geo identifier.
         geo_id: string
-            (Required) The parameter used to specify the geographic 
+            (Required) The parameter used to specify the geographic
             location formatted as CountryCode|AdminArea|Locality.
             CountryCode is a ISO-ALPHA2-COUNTRYCODE string.
             AdminArea is state or the equivalent according
             to its associated Country.
-            Locality is city or the equivalent 
+            Locality is city or the equivalent
             according to its associated adminArea.
         """
         res = self.api_call("search/geo",
