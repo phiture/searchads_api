@@ -16,6 +16,15 @@ create a certs directory inside of your project folder, or create a different ce
          api = SearchAdsAPI(123456, "cert.pem", "cert.key", certificates_dir_path="certs/",verbose=False)
 
 
+## Setup for v4 of the library
+
+create a certs directory inside of your project folder, or create a different certs directory and specify it using the certificates_dir_path argument.
+
+         api = SearchAdsAPI(2134535, "public.pem","private.key", 
+         client_id="SEARCHADS.07875add-f6cd-4111-9c38-b84501d557c8",
+         team_id="SEARCHADS.07879add-d6cd-4111-9c38-b84501d527c8",
+         key_id="78a167b1-e423-4ab4-bcd1-8be75a4d7b7e", verbose=True)
+
 ## Available Methods
 
 ### Campaign Methods
