@@ -27,59 +27,70 @@ class SearchAdsAPI:
         self.session = session
         self.path = certificates_dir_path
         self.verbose = verbose
-        self.api_version = api_version
+        if key_id is None:
+            self.api_version = "v3"
+        else:
+            self.api_version = api_version
         self.client_id = client_id
         self.team_id = team_id
         self.key_id = key_id
+        self.access_token = None
 
     def get_access_token_from_client_secret(self,key):
-        audience = 'https://appleid.apple.com'
-        alg = 'ES256'
-        # Define issue timestamp.
-        issued_at_timestamp = int(datetime.datetime.utcnow().timestamp())
-        # Define expiration timestamp. May not exceed 180 days from issue timestamp.
-        expiration_timestamp = issued_at_timestamp + 86400*180
+        if self.access_token is None:
+            audience = 'https://appleid.apple.com'
+            alg = 'ES256'
+            # Define issue timestamp.
+            issued_at_timestamp = int(datetime.datetime.utcnow().timestamp())
+            # Define expiration timestamp. May not exceed 180 days from issue timestamp.
+            expiration_timestamp = issued_at_timestamp + 86400*180
 
-        # Define JWT headers.
-        headers = dict()
-        headers['alg'] = alg
-        headers['kid'] = self.key_id
+            # Define JWT headers.
+            headers = dict()
+            headers['alg'] = alg
+            headers['kid'] = self.key_id
 
-        # Define JWT payload.
-        payload = dict()
-        payload['sub'] = self.client_id
-        payload['aud'] = audience
-        payload['iat'] = issued_at_timestamp
-        payload['exp'] = expiration_timestamp
-        payload['iss'] = self.team_id
+            # Define JWT payload.
+            payload = dict()
+            payload['sub'] = self.client_id
+            payload['aud'] = audience
+            payload['iat'] = issued_at_timestamp
+            payload['exp'] = expiration_timestamp
+            payload['iss'] = self.team_id
 
-        # Path to signed private key.
-        KEY_FILE = key
+            # Path to signed private key.
+            KEY_FILE = key
 
-        with open(KEY_FILE, 'r') as key_file:
-            key = ''.join(key_file.readlines())
+            with open(KEY_FILE, 'r') as key_file:
+                key = ''.join(key_file.readlines())
 
-        client_secret = jwt.encode(
-            payload=payload,
-            headers=headers,
-            algorithm=alg,
-            key=key
-        )
-        # with open(f'{KEY_FILE}.txt', 'w') as output:
-        #     output.write(client_secret.decode("utf-8"))
-        result = requests.post(f"""https://appleid.apple.com/auth/oauth2/token""",
-                      data={"grant_type": "client_credentials",
-                            "client_id": f"{self.client_id}",
-                            "client_secret": f"{client_secret}",
-                            "scope": "searchadsorg"},
-                      headers={
-                          "Host": "appleid.apple.com",
-                          "Content-Type": "application/x-www-form-urlencoded"
-                      })
-        
-        # return client_secret
-        access_token = result.json()["access_token"]
-        print(access_token)
+            client_secret = jwt.encode(
+                payload=payload,
+                headers=headers,
+                algorithm=alg,
+                key=key
+            )
+            # with open(f'{KEY_FILE}.txt', 'w') as output:
+            #     output.write(client_secret.decode("utf-8"))
+            result = requests.post("https://appleid.apple.com/auth/oauth2/token",
+                        data={"grant_type": "client_credentials",
+                                "client_id": self.client_id,
+                                "client_secret": client_secret,
+                                "scope": "searchadsorg"},
+                        headers={
+                            "Host": "appleid.apple.com",
+                            "Content-Type": "application/x-www-form-urlencoded"
+                        })
+            
+            # return client_secret
+            access_token = result.json()["access_token"]
+            # set global access token
+            self.access_token = access_token
+        else:
+            # get global access_token
+            access_token = self.access_token
+        if self.verbose:
+            print(access_token)
         return access_token
         
 
@@ -127,7 +138,7 @@ class SearchAdsAPI:
         if self.org_id:
             kwargs['headers']["Authorization"] = f"orgId={self.org_id}"
         # only if using Search Ads API v4
-        if self.key_id is not None:
+        if self.key_id is not None and self.api_version=="v4":
             access_token = self.get_access_token_from_client_secret(key)
             kwargs['headers']["Authorization"] = f"Bearer {access_token}"
             kwargs['headers']["X-AP-Context"] = f"orgId={self.org_id}"
@@ -142,7 +153,10 @@ class SearchAdsAPI:
             req = caller.put(url, **kwargs)
         elif method == "delete" or method == "DELETE":
             req = caller.delete(url, **kwargs)
+        if req.status_code == 401 and self.api_version=="v4":
+            access_token = self.get_access_token_from_client_secret(key)
         if self.verbose:
+            print(req.status_code)
             print(req.url)
             print(req.text)
         return req.json()
