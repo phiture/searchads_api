@@ -4,7 +4,7 @@ import setuptools
 setup(
     name='searchads_api',
     description='Apple Searchads API non-official python library',
-    version='1.4',
+    version='1.5',
     url='https://github.com/phiture/searchads_api',
     author='Abdul Majeed Alkattan',
     author_email='alkattan@phiture.com',
@@ -28,6 +28,7 @@ Added granularity level reports
 version 0.7 fixed some issues with granularity
 version 1.1 added support for the v4 of the Apple Search Ads API
 version 1.2 refresh access_tokn only when needed
+version 1.5 handles API error with Exception
     """,
     
     )

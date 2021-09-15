@@ -4,6 +4,7 @@ import time
 import datetime
 import random
 import jwt
+from requests.models import Response
 
 
 class SearchAdsAPI:
@@ -155,11 +156,16 @@ class SearchAdsAPI:
             req = caller.delete(url, **kwargs)
         if req.status_code == 401 and self.api_version=="v4":
             access_token = self.get_access_token_from_client_secret(key)
+        
         if self.verbose:
             print(req.status_code)
             print(req.url)
             print(req.text)
-        return req.json()
+        resp = req.json()
+        if resp["error"] is not None:
+            print("API Error", resp["error"])
+            raise Exception(resp["error"])
+        return resp
 
     # Campaign Methods
 
