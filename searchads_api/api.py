@@ -162,8 +162,8 @@ class SearchAdsAPI:
             print(req.url)
             print(req.text)
         resp = req.json()
+        # raise an error
         if resp["error"] is not None:
-            print("API Error", resp["error"])
             raise Exception(resp["error"])
         return resp
 
