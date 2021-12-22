@@ -452,7 +452,8 @@ class SearchAdsAPI:
             "campaignId": campaign_id,
             "name": adgroup_name,
             "automatedKeywordsOptIn": automated_keywords_opt_in,
-            "defaultCpcBid": {
+            "pricingModel": "CPC",
+            "defaultBidAmount": {
                 "amount": "{}".format(cpc_bid),
                 "currency": currency
             },
