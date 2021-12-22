@@ -191,7 +191,10 @@ class SearchAdsAPI:
                 "currency": curruncy
             },
             "adamId": app_id,
-            "countriesOrRegions": countries
+            "countriesOrRegions": countries,
+            "adChannelType": "SEARCH",
+            "supplySources": ["APPSTORE_SEARCH_RESULTS"],
+            "billingEvent": "TAPS",
         }
         res = self.api_call("campaigns", json_data=data, method="POST")
         return res
