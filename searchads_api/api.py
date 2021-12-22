@@ -318,9 +318,9 @@ class SearchAdsAPI:
             edit["name"] = campaign_name
         if campaign_name:
             edit["status"] = campaign_name
-        if edit["adamId"]:
+        if adamId:
             edit["adamId"] = adamId
-        if edit["status"]:
+        if status:
             edit["status"] = status
         data = {"campaign": edit}
         res = self.api_call(api_endpoint="campaigns/{}".format(campaign_id),
