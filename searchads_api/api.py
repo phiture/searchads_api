@@ -154,7 +154,8 @@ class SearchAdsAPI:
             req = caller.put(url, **kwargs)
         elif method == "delete" or method == "DELETE":
             req = caller.delete(url, **kwargs)
-        if req.status_code == 401 and self.api_version=="v4":
+        if (req.status_code == 401 or "Expired Token:" in req.text) and self.api_version=="v4":
+            print("Update the token due to expiration")
             access_token = self.get_access_token_from_client_secret(key)
         
         if self.verbose:

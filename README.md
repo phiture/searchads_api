@@ -332,3 +332,9 @@ create a certs directory inside of your project folder, or create a different ce
          res = api.get_geo_locations_list(geo_id,
                                entity,
                                limit=1000, offset=0)
+
+
+
+## Changelog
+
+* version 1.5.2 fixed a bug in token refresh due to wrong status code
