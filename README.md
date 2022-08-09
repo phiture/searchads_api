@@ -231,9 +231,9 @@ create a certs directory inside of your project folder, or create a different ce
          keyword_ids = [123456789]
          res = api.delete_adgroup_negative_keywords(290916652, 291017295, keyword_ids)
 
-### Creativeset Methods
+### Creativeset Methods (Some methods are Deprecated since ASA v4)
 
-- Fetch assets used with Creative Sets.
+- DEPRECATED Fetch assets used with Creative Sets.
 
          res = api.get_creativesets_assets(adam_id, countries_or_regions, assets_gen_ids=[])
 
@@ -253,15 +253,15 @@ create a certs directory inside of your project folder, or create a different ce
 
          res = api.get_creativeset(creativeset_id, include_deleted_creative_set_assets=False)
 
-- Update an Adgroup Creativeset
+- DEPRECATED Update an Adgroup Creativeset
 
          res = api.update_creativeset(campaign_id, adgroup_id, creativeset_id, status)
 
-- Assign a Creativeset to an Adgroup
+- DEPRECATED Assign a Creativeset to an Adgroup
 
          res = api.assign_creativeset_to_adgroup(campaign_id, adgroup_id, creativeset_id)
 
-- Fetch all Creative Sets assigned to ad groups.
+- DEPRECATED Fetch all Creative Sets assigned to ad groups.
 
          conditions = [{
             "field": "id",
@@ -272,7 +272,7 @@ create a certs directory inside of your project folder, or create a different ce
             }]
          res = api.find_adgroup_creativesets(campaign_id,conditions=conditions,         sort_field="id", sort_order="ASCENDING")
 
-- Fetch all Creative Sets assigned to an organization.
+- DEPRECATED Fetch all Creative Sets assigned to an organization.
 
          res = api.find_creativesets(conditions=[], limit=1000, offset=0)
 
@@ -280,34 +280,46 @@ create a certs directory inside of your project folder, or create a different ce
 
          res = api.get_creativeset(creativeset_id, include_deleted_creative_set_assets=False)
 
-- Update a creativeset name
+- DEPRECATED Update a creativeset name
 
          res = api.update_adgroup_creativeset_name(creativeset_id, name)
 
-- Delete creative sets from a specified Adgroup
+- DEPRECATED Delete creative sets from a specified Adgroup
          res = api.delete_creativesets(campaign_id, adgroup_id, ids)
 
 ### Reporting Methods
 
 - Get reports on campaigns within a specific org.
 
-         res = api.get_adgroups_report_by_date("2019-04-01", "2019-04-10", 123456789, limit=5)
+         res = api.get_campaigns_report_by_date("2019-04-01", "2019-04-10", 123456789, limit=5)
 
 - Get reports on adgroups within a specific org.
 
          row, grandTotals = api.get_adgroups_report_by_date(123456789, "2019-02-20", "2019-02-28",limit=0)
 
-- Get reports on creativeset level. limit 0 gets all results instead of just 1000
-
-         row, grandTotals= api.get_creativesets_report_by_date(123456789, "2019-06-01", "2019-06-10")
-
 - Get reports on keywords level. limit 0 gets all results instead of just 1000
 
          row, grandTotals = api.get_keywords_report_by_date(123456789, "2019-02-20", "2019-02-28",limit=0)
 
+- Fetches reports for targeting keywords within an ad group. limit 0 gets all results instead of just 1000
+
+         row, grandTotals = api.get_keyword_level_within_adgroup_report_by_date(123456789, 123456789, "2019-02-20", "2019-02-28",limit=0)
+
+- DEPRECATED Get reports on creativeset level. limit 0 gets all results instead of just 1000
+
+         row, grandTotals= api.get_creativesets_report_by_date(123456789, "2019-06-01", "2019-06-10")
+
+- Fetches ad performance data within a campaign. limit 0 gets all results instead of just 1000
+
+         row, grandTotals= api.get_ad_level_report_by_date(123456789, "2019-06-01", "2019-06-10")
+
 - Get reports on searchterms level
 
          row, grandTotals = api.get_searcherms_report_by_date(123456789,"2019-05-01", "2019-05-07",limit=0)
+
+- Fetches reports for search terms within an ad group.
+
+         row, grandTotals = api.get_searchterm_level_within_an_adgroup_report_by_date(123456789, 123456789,"2019-05-01", "2019-05-07",limit=0)
 
 ### Geo Search
 
@@ -333,8 +345,11 @@ create a certs directory inside of your project folder, or create a different ce
                                entity,
                                limit=1000, offset=0)
 
+# Ad Endpoints
 
+# Product Pages methods
 
 ## Changelog
 
 * version 1.5.2 fixed a bug in token refresh due to wrong status code
+* version 1.5.3 deprecated creativesets methods from Apple Search Ads API v4

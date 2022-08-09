@@ -1,3 +1,5 @@
+from pstats import Stats
+from cv2 import exp
 import requests
 import json
 import time
@@ -37,7 +39,7 @@ class SearchAdsAPI:
         self.key_id = key_id
         self.access_token = None
 
-    def get_access_token_from_client_secret(self,key):
+    def get_access_token_from_client_secret(self, key):
         if self.access_token is None:
             audience = 'https://appleid.apple.com'
             alg = 'ES256'
@@ -74,15 +76,15 @@ class SearchAdsAPI:
             # with open(f'{KEY_FILE}.txt', 'w') as output:
             #     output.write(client_secret.decode("utf-8"))
             result = requests.post("https://appleid.apple.com/auth/oauth2/token",
-                        data={"grant_type": "client_credentials",
-                                "client_id": self.client_id,
-                                "client_secret": client_secret,
-                                "scope": "searchadsorg"},
-                        headers={
-                            "Host": "appleid.apple.com",
-                            "Content-Type": "application/x-www-form-urlencoded"
-                        })
-            
+                                   data={"grant_type": "client_credentials",
+                                         "client_id": self.client_id,
+                                         "client_secret": client_secret,
+                                         "scope": "searchadsorg"},
+                                   headers={
+                                       "Host": "appleid.apple.com",
+                                       "Content-Type": "application/x-www-form-urlencoded"
+                                   })
+
             # return client_secret
             access_token = result.json()["access_token"]
             # set global access token
@@ -93,9 +95,9 @@ class SearchAdsAPI:
         if self.verbose:
             print(access_token)
         return access_token
-        
 
     # API Function
+
     def api_call(self,
                  api_endpoint="",
                  headers={},
@@ -116,7 +118,7 @@ class SearchAdsAPI:
         # find the certicates path
         pem = self.path + self.pem
         key = self.path + self.key
-        
+
         kwargs = {
             "headers": headers,
         }
@@ -139,7 +141,7 @@ class SearchAdsAPI:
         if self.org_id:
             kwargs['headers']["Authorization"] = f"orgId={self.org_id}"
         # only if using Search Ads API v4
-        if self.key_id is not None and self.api_version=="v4":
+        if self.key_id is not None and self.api_version == "v4":
             access_token = self.get_access_token_from_client_secret(key)
             kwargs['headers']["Authorization"] = f"Bearer {access_token}"
             kwargs['headers']["X-AP-Context"] = f"orgId={self.org_id}"
@@ -154,10 +156,15 @@ class SearchAdsAPI:
             req = caller.put(url, **kwargs)
         elif method == "delete" or method == "DELETE":
             req = caller.delete(url, **kwargs)
-        if (req.status_code == 401 or "Expired Token:" in req.text) and self.api_version=="v4":
+        if (req.status_code == 401 or "Expired Token:" in req.text) and self.api_version == "v4":
             print("Update the token due to expiration")
+            # make it none
+            self.access_token = None
+            # Get a new token
             access_token = self.get_access_token_from_client_secret(key)
-        
+            # echo new token
+            print(access_token)
+
         if self.verbose:
             print(req.status_code)
             print(req.url)
@@ -1011,12 +1018,14 @@ class SearchAdsAPI:
         return res
 
    ## Creativeset Methods ##
+
     def get_creativesets_assets(self,
                                 adam_id,
                                 countries_or_regions,
                                 assets_gen_ids=[]):
         """
         Fetches assets used with Creative Sets.
+        Deprecated
         """
         data = {
             "countryOrRegions": countries_or_regions,
@@ -1026,12 +1035,6 @@ class SearchAdsAPI:
                             json_data=data, method="POST")
         return res
 
-    def get_app_preview_device_sizes(self):
-        """
-        Fetches supported app preview device size mappings.
-        """
-        return self.api_call("creativeappmappings/devices")
-
     def create_creativeset(self,
                            campaign_id,
                            adgroup_id,
@@ -1040,6 +1043,7 @@ class SearchAdsAPI:
                            languageCode,
                            assetsGenIds):
         """
+        Deprecated
         Creates a creative set experiment
         {
             "creativeSet": {
@@ -1076,6 +1080,7 @@ class SearchAdsAPI:
                                    creativeset_id,
                                    status):
         """
+        Deprecated
         Updates the status of a CreativeSet in the specified campaign and
         adgroup. ENABLED or PAUSED
         {"status":"PAUSED"}
@@ -1096,8 +1101,10 @@ class SearchAdsAPI:
                                       adgroup_id,
                                       creativeset_id):
         """
+        Deprecated
         Creates a Creative Set assignment to an ad group.
         """
+        print("Please don't use this method as it's deprecated since v4")
         data = {"creativeSetId": creativeset_id}
         res = self.api_call("campaigns/{}/adgroups/{}/adgroupcreativesets"
                             .format(campaign_id,
@@ -1114,6 +1121,7 @@ class SearchAdsAPI:
                                   limit=1000,
                                   offset=0):
         """
+        Deprecated
         Fetches all Creative Sets assigned to ad groups.
         Use this endpoint to find all Creative Sets assigned to an ad group. 
         Use the corresponding campaignId of the ad group in the URI. 
@@ -1128,6 +1136,7 @@ class SearchAdsAPI:
             ]
         }]
         """
+        print("Please don't use this method as it's deprecated since v4")
         data = {
             "selector": {
                 "conditions": conditions,
@@ -1155,6 +1164,7 @@ class SearchAdsAPI:
                           limit=1000,
                           offset=0):
         """
+        Deprecated
         Fetches all Creative Sets assigned to an organization.
         Use this endpoint to find all Creative Sets assigned to an organization. 
         Use the name or id field with its corresponding campaignID as a value in
@@ -1167,6 +1177,7 @@ class SearchAdsAPI:
                     ]
                 }
         """
+        print("Please don't use this method as it's deprecated since v4")
         data = {
             "selector": {
                 "pagination": {
@@ -1184,6 +1195,7 @@ class SearchAdsAPI:
                         creativeset_id,
                         include_deleted_creative_set_assets=False):
         """
+        Deprecated
         Fetches asset details of a Creative Set.
         """
         params = {
@@ -1196,9 +1208,11 @@ class SearchAdsAPI:
 
     def update_adgroup_creativeset_name(self, creativeset_id, name):
         """
+        Deprecated
         Updates a Creative Set name using an identifier.
         {"name":"Campaign 2019"}
         """
+        print("Please don't use this method as it's deprecated since v4")
         data = {"name": name}
         res = self.api_call(
             "creativesets/{}".format(creativeset_id),
@@ -1208,10 +1222,12 @@ class SearchAdsAPI:
 
     def delete_creativesets(self, campaign_id, adgroup_id, ids):
         """
+        Deprecated
         Delete Creative Sets from a specified ad group.
         you could specify either one id or a list of ids
         [11111111,22222222,33333333,4444444]
         """
+        print("Please don't use this method as it's deprecated since v4")
         if type(ids) == int:
             ids = [ids]
         res = self.api_call(
@@ -1222,7 +1238,204 @@ class SearchAdsAPI:
         )
         return res
 
+    # Product Pages methods
+
+    def get_product_pages(self, adamId, name=None, states=None):
+        """
+        Fetches metadata of all your custom product pages.
+        adamId: int, App Adam ID
+        name: str, Filters by name field. For example, the name of your custom product page on App Store Connect.
+        states: str, Possible values: VISIBLE, HIDDEN. Filters by states, which indicates whether the product page is visible or not.
+        """
+        data = {
+        }
+        if name is not None:
+            data["name"] = name
+        if states is not None:
+            data["states"] = states
+        res = self.api_call(f"apps/{adamId}/product-pages",
+                            json_data=data, method="GET")
+        return res
+
+    def get_product_page_by_identifier(self, adamId, productPageId):
+        """
+        Fetches metadata for a specific product page.
+
+        adamId: int, (Required) Your adamId in the resource path must match the adamId in your campaign. Use Get a Campaign or Get All Campaigns to obtain your adamId and correlate it to the correct campaign.
+        productPageId: int,  (Required) A unique string to identify a product page on App Store Connect. For example, 45812c9b-c296-43d3-c6a0-c5a02f74bf6e.
+        """
+        res = self.api_call(f"apps/{adamId}/product-pages/{productPageId}",
+                            method="GET")
+        return res
+
+    def get_product_page_locales(self, adamId, productPageId, expand, languages, languageCodes, deviceClasses):
+        """
+        Fetches product page locales by identifier.
+
+        adamId: int, (Required) Your adamId in the resource path must match the adamId in your campaign. Use Get a Campaign or Get All Campaigns to obtain your adamId and correlate it to the correct campaign.
+        productPageId: int,  (Required) A unique string to identify a product page on App Store Connect. For example, 45812c9b-c296-43d3-c6a0-c5a02f74bf6e.
+        expand: Detailed app asset details of a device. Default: false
+        languages: Filters by ISO alpha-2 country code, such as US.
+        languageCodes: string Filters by ISO 639-1 language code appended to the ISO alpha-2 country code, such as en-US. The languageCodes paramater can have multiple values such as en-US, fr-CA.
+        deviceClasses: string Filters by device type. Possible values: IPHONE, IPAD
+        """
+        data = {
+            "expand": expand,
+            "languages": languages,
+            "languageCodes": languageCodes,
+            "deviceClasses": deviceClasses
+        }
+        res = self.api_call(f"apps/{adamId}/product-pages/{productPageId}/locale-details",
+                            params=data, method="GET")
+        return res
+
+    def get_product_page_locales(self, countriesOrRegions):
+        """
+        Fetches supported languages and language codes.
+
+        countriesOrRegions: string, Filters by ISO alpha-2 country codes using one or more comma-separated values.
+        For example: https://api.searchads.apple.com/api/v4/countries-or-regions?countriesOrRegions=US,GB,AU,CA.
+        """
+        data = {
+            "countriesOrRegions": countriesOrRegions
+        }
+        res = self.api_call("countries-or-regions",
+                            params=data, method="GET")
+        return res
+
+    def get_app_preview_device_sizes(self):
+        """
+        Fetches supported app preview device size mappings.
+        """
+        return self.api_call("creativeappmappings/devices")
+
+    # Ad Endpoints
+
+    def create_an_ad(self, campaignId, adgroupId, name, creativeId, status):
+        data = {
+            "name": name,
+            "creativeId": creativeId,
+            "status": status
+        }
+
+        res = self.api_call(f"campaigns/{campaignId}/adgroups/{adgroupId}/ads",
+                            json_data=data, method="POST")
+        return res
+
+    def find_ads(self, campaignId, fields=None, sort_field="creativeType",
+                 sort_order="ASCENDING",
+                 conditions=[],
+                 limit=1000,
+                 offset=0):
+        """
+        Finds ads within a campaign by selector criteria.
+        {
+            "fields": null,
+            "pagination": {
+                "offset": 0,
+                "limit": 1000
+            },
+            "orderBy": [{
+                "field": "creativeType",
+                "sortOrder": "ASCENDING"
+            }],
+            "conditions": [{
+                "field": "matchType",
+                "operator": "EQUALS",
+                "values": [
+                    "BROAD"
+                ]
+            }]
+        }
+        Conditions Example:
+            "conditions": [
+                {
+                "field": "creativeType",
+                "operator": "EQUALS",
+                "values": [
+                    "CUSTOM_PRODUCT_PAGE"
+                ]
+                },
+                {
+                "field": "status",
+                "operator": "EQUALS",
+                "values": [
+                    "PAUSED"
+                ]
+                }
+            ],
+        """
+        data = {
+            "fields": fields,
+            "pagination": {
+                "offset": offset,
+                "limit": limit
+            },
+            "orderBy": [{
+                "field": sort_field,
+                "sortOrder": sort_order
+            }],
+            "conditions": conditions
+        }
+        res = self.api_call(f"campaigns/{campaignId}/ads/find",
+                            json_data=data,
+                            method="POST")
+        return res
+
+    def get_an_ad(self, campaignId, adgroupId, adId):
+        """
+        Fetches an ad assigned to an ad group by identifier.
+
+        campaignId: int, (Required) Your Campaign Id Use Get a Campaign or Get All Campaigns to obtain your adamId and correlate it to the correct campaign.
+        adgroupId: int,  (Required) A unique string to identify an adgroup
+        adId: int,  (Required) A unique string to identify an ad
+        """
+        res = self.api_call(f"campaigns/{campaignId}/adgroups/{adgroupId}/ads/{adId}",
+                            method="GET")
+        return res
+
+    def get_all_ads(self, campaignId, adgroupId, adId):
+        """
+        Fetches all ads assigned to an ad group.
+
+        campaignId: int, (Required) Your Campaign Id Use Get a Campaign or Get All Campaigns to obtain your adamId and correlate it to the correct campaign.
+        adgroupId: int,  (Required) A unique string to identify an adgroup
+        """
+        res = self.api_call(f"campaigns/{campaignId}/adgroups/{adgroupId}/ads/{adId}",
+                            method="GET")
+        return res
+
+    def update_an_ad(self, campaignId, adgroupId, adId, name, status):
+        """
+        Updates an ad in an ad group.
+
+        campaignId: int, (Required) Your Campaign Id Use Get a Campaign or Get All Campaigns to obtain your adamId and correlate it to the correct campaign.
+        adgroupId: int,  (Required) A unique string to identify an adgroup
+        adId: int,  (Required) A unique string to identify an Ad
+        name: str, new name
+        status: str, new status
+        """
+        data = {
+            "name": name,
+            "status": status
+        }
+        res = self.api_call(f"campaigns/{campaignId}/adgroups/{adgroupId}/ads/{adId}",
+                            json_data=data, method="PUT")
+        return res
+
+    def delete_an_ad(self, campaignId, adgroupId, adId):
+        """
+        Deletes an ad from an ad group.
+
+        campaignId: int, (Required) Your Campaign Id Use Get a Campaign or Get All Campaigns to obtain your adamId and correlate it to the correct campaign.
+        adgroupId: int,  (Required) A unique string to identify an adgroup
+        adId: int,  (Required) A unique string to identify an Ad
+        """
+        res = self.api_call(f"campaigns/{campaignId}/adgroups/{adgroupId}/ads/{adId}", method="DELETE")
+        return res
+
     # Reporting Methods
+
     def get_campaigns_report_by_date(self,
                                      start_date,
                                      end_date,
@@ -1357,40 +1570,6 @@ class SearchAdsAPI:
                               offset=offset,
                               limit=limit)
 
-    def get_creativesets_report_by_date(self,
-                                        campaignId,
-                                        start_date,
-                                        end_date,
-                                        sort_field="adGroupId",
-                                        sort_order="ASCENDING",
-                                        conditions=[],
-                                        return_records_with_no_metrics=True,
-                                        return_row_totals=True,
-                                        return_grand_totals=True,
-                                        granularity=None,
-                                        group_by=None,
-                                        offset=0,
-                                        limit=1000):
-        """
-        Fetches reports on Creative Sets used within a campaign.
-        conditions example
-        {"field": "deleted","operator": "EQUALS","values": ["false"]}
-        """
-        return self._get_data(data_type="creativesets",
-                              campaignId=campaignId,
-                              start_date=start_date,
-                              end_date=end_date,
-                              sort_field=sort_field,
-                              sort_order=sort_order,
-                              conditions=conditions,
-                              no_metrics=return_records_with_no_metrics,
-                              return_row_totals=return_row_totals,
-                              return_grand_totals=return_grand_totals,
-                              granularity=granularity,
-                              group_by=group_by,
-                              offset=offset,
-                              limit=limit)
-
     def get_keywords_report_by_date(self,
                                     campaignId,
                                     start_date,
@@ -1410,6 +1589,44 @@ class SearchAdsAPI:
         """
         return self._get_data(data_type="keywords",
                               campaignId=campaignId,
+                              start_date=start_date,
+                              end_date=end_date,
+                              sort_field=sort_field,
+                              sort_order=sort_order,
+                              conditions=conditions,
+                              no_metrics=return_records_with_no_metrics,
+                              return_row_totals=return_row_totals,
+                              return_grand_totals=return_grand_totals,
+                              granularity=granularity,
+                              group_by=group_by,
+                              offset=offset,
+                              limit=limit)
+
+    def get_keyword_level_within_adgroup_report_by_date(self,
+                                                        campaignId,
+                                                        adgroupId,
+                                                        start_date,
+                                                        end_date,
+                                                        sort_field="adGroupId",
+                                                        sort_order="ASCENDING",
+                                                        conditions=[],
+                                                        return_records_with_no_metrics=True,
+                                                        return_row_totals=True,
+                                                        return_grand_totals=True,
+                                                        granularity=None,
+                                                        group_by=None,
+                                                        offset=0,
+                                                        limit=1000):
+        """
+        Fetches reports for targeting keywords within an ad group.
+
+        Use this endpoint to fetch reports for a high volume of targeting keywords in your campaigns. 
+        The orderBy Selector specifies fields to sort the records list by ASCENDING or DESCENDING. 
+        All ReportingKeyword fields are available to the orderBy Selector.
+        """
+        return self._get_data(data_type="keywords_adgroup",
+                              campaignId=campaignId,
+                              adgroupId=adgroupId,
                               start_date=start_date,
                               end_date=end_date,
                               sort_field=sort_field,
@@ -1455,6 +1672,114 @@ class SearchAdsAPI:
                               offset=offset,
                               limit=limit)
 
+    def get_searchterm_level_within_an_adgroup_report_by_date(self,
+                                                              campaignId,
+                                                              adgroupId,
+                                                              start_date,
+                                                              end_date,
+                                                              sort_field="adGroupId",
+                                                              sort_order="ASCENDING",
+                                                              conditions=[],
+                                                              return_records_with_no_metrics=False,
+                                                              return_row_totals=True,
+                                                              return_grand_totals=True,
+                                                              granularity=None,
+                                                              group_by=None,
+                                                              offset=0,
+                                                              limit=1000):
+        """
+        Fetches reports for search terms within an ad group.
+        Use this endpoint to fetch reports with a high volume of search terms in your campaign. 
+        See ReportingSearchTerm for Condition operators and field values to filter results with a Selector. 
+        The limit for search term-level reports is 10 impressions. Search term-level reports only support 
+        a timeZone value of ORTZ. The orderBy Selector specifies fields to sort the records list by ASCENDING 
+        or DESCENDING. All ReportingSearchTerm fields are available to the orderBy Selector.
+        """
+        return self._get_data(data_type="searchterms_adgroup",
+                              campaignId=campaignId,
+                              adgroupId=adgroupId,
+                              start_date=start_date,
+                              end_date=end_date,
+                              sort_field=sort_field,
+                              sort_order=sort_order,
+                              conditions=conditions,
+                              no_metrics=return_records_with_no_metrics,
+                              return_row_totals=return_row_totals,
+                              return_grand_totals=return_grand_totals,
+                              granularity=granularity,
+                              group_by=group_by,
+                              offset=offset,
+                              limit=limit)
+
+    def get_creativesets_report_by_date(self,
+                                        campaignId,
+                                        start_date,
+                                        end_date,
+                                        sort_field="adGroupId",
+                                        sort_order="ASCENDING",
+                                        conditions=[],
+                                        return_records_with_no_metrics=True,
+                                        return_row_totals=True,
+                                        return_grand_totals=True,
+                                        granularity=None,
+                                        group_by=None,
+                                        offset=0,
+                                        limit=1000):
+        """
+        DEPRECATED and no longer to be used since ASA API v4
+        Fetches reports on Creative Sets used within a campaign.
+        conditions example
+        {"field": "deleted","operator": "EQUALS","values": ["false"]}
+        """
+        return self._get_data(data_type="creativesets",
+                              campaignId=campaignId,
+                              start_date=start_date,
+                              end_date=end_date,
+                              sort_field=sort_field,
+                              sort_order=sort_order,
+                              conditions=conditions,
+                              no_metrics=return_records_with_no_metrics,
+                              return_row_totals=return_row_totals,
+                              return_grand_totals=return_grand_totals,
+                              granularity=granularity,
+                              group_by=group_by,
+                              offset=offset,
+                              limit=limit)
+
+    def get_ad_level_report_by_date(self,
+                                    campaignId,
+                                    start_date,
+                                    end_date,
+                                    sort_field="adGroupId",
+                                    sort_order="ASCENDING",
+                                    conditions=[],
+                                    return_records_with_no_metrics=True,
+                                    return_row_totals=True,
+                                    return_grand_totals=True,
+                                    granularity=None,
+                                    group_by=None,
+                                    offset=0,
+                                    limit=1000):
+        """ 
+        Fetches ad performance data within a campaign.
+        conditions example
+        {"field": "deleted","operator": "EQUALS","values": ["false"]}
+        """
+        return self._get_data(data_type="ads",
+                              campaignId=campaignId,
+                              start_date=start_date,
+                              end_date=end_date,
+                              sort_field=sort_field,
+                              sort_order=sort_order,
+                              conditions=conditions,
+                              no_metrics=return_records_with_no_metrics,
+                              return_row_totals=return_row_totals,
+                              return_grand_totals=return_grand_totals,
+                              granularity=granularity,
+                              group_by=group_by,
+                              offset=offset,
+                              limit=limit)
+
     def _get_data(self,
                   data_type,
                   start_date,
@@ -1469,6 +1794,7 @@ class SearchAdsAPI:
                   limit,
                   granularity=None,
                   campaignId=None,
+                  adgroupId=None,
                   group_by=None):
         """
         Request driver
@@ -1517,22 +1843,34 @@ class SearchAdsAPI:
                                     json_data=data, method="POST")
             elif data_type == "adgroups":
                 res = self.api_call(
-                    "reports/campaigns/{}/adgroups".format(campaignId),
+                    f"reports/campaigns/{campaignId}/adgroups",
                     json_data=data, method="POST")
             elif data_type == "creativesets":
                 res = self.api_call(
-                    "reports/campaigns/{}/creativesets".format(campaignId),
+                    f"reports/campaigns/{campaignId}/creativesets",
+                    json_data=data, method="POST")
+            elif data_type == "ads":
+                res = self.api_call(
+                    f"reports/campaigns/{campaignId}/ads",
                     json_data=data, method="POST")
             elif data_type == "keywords":
                 res = self.api_call(
-                    "reports/campaigns/{}/keywords".format(campaignId),
+                    f"reports/campaigns/{campaignId}/keywords",
+                    json_data=data, method="POST")
+            elif data_type == "keywords_adgroup":
+                res = self.api_call(
+                    f"reports/campaigns/{campaignId}/adgroups/{adgroupId}/keywords",
                     json_data=data, method="POST")
             elif data_type == "searchterms":
                 res = self.api_call(
-                    "reports/campaigns/{}/searchterms".format(campaignId),
+                    f"reports/campaigns/{campaignId}/searchterms",
+                    json_data=data, method="POST")
+            elif data_type == "searchterms_adgroup":
+                res = self.api_call(
+                    f"reports/campaigns/{campaignId}/adgroups/{adgroupId}/searchterms",
                     json_data=data, method="POST")
             else:
-                print("Unknown data type", data_type)
+                print("Unknown request type", data_type)
             if res is None:
                 return None
             if res["data"] is None:
