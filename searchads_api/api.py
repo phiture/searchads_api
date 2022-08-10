@@ -1394,14 +1394,14 @@ class SearchAdsAPI:
                             method="GET")
         return res
 
-    def get_all_ads(self, campaignId, adgroupId, adId):
+    def get_all_ads(self, campaignId, adgroupId):
         """
         Fetches all ads assigned to an ad group.
 
         campaignId: int, (Required) Your Campaign Id Use Get a Campaign or Get All Campaigns to obtain your adamId and correlate it to the correct campaign.
         adgroupId: int,  (Required) A unique string to identify an adgroup
         """
-        res = self.api_call(f"campaigns/{campaignId}/adgroups/{adgroupId}/ads/{adId}",
+        res = self.api_call(f"campaigns/{campaignId}/adgroups/{adgroupId}/ads",
                             method="GET")
         return res
 
