@@ -199,7 +199,10 @@ class SearchAdsAPI:
                 "currency": curruncy
             },
             "adamId": app_id,
-            "countriesOrRegions": countries
+            "countriesOrRegions": countries,
+            "adChannelType": "SEARCH",
+            "supplySources": ["APPSTORE_SEARCH_RESULTS"],
+            "billingEvent": "TAPS",
         }
         res = self.api_call("campaigns", json_data=data, method="POST")
         return res
@@ -323,9 +326,9 @@ class SearchAdsAPI:
             edit["name"] = campaign_name
         if campaign_name:
             edit["status"] = campaign_name
-        if edit["adamId"]:
+        if adamId:
             edit["adamId"] = adamId
-        if edit["status"]:
+        if status:
             edit["status"] = status
         data = {"campaign": edit}
         res = self.api_call(api_endpoint="campaigns/{}".format(campaign_id),
@@ -457,7 +460,8 @@ class SearchAdsAPI:
             "campaignId": campaign_id,
             "name": adgroup_name,
             "automatedKeywordsOptIn": automated_keywords_opt_in,
-            "defaultCpcBid": {
+            "pricingModel": "CPC",
+            "defaultBidAmount": {
                 "amount": "{}".format(cpc_bid),
                 "currency": currency
             },
