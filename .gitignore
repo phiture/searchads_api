@@ -1,13 +1,12 @@
 certs/
 .vscode/
+.idea/
 .DS_Store
 *egg-info
-dist/
 __pycache__
 tmp.py
 driver.py
 auth/
-dist/
 
 
 # C extensions
