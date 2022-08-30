@@ -171,8 +171,9 @@ class SearchAdsAPI:
             print(req.text)
         resp = req.json()
         # raise an error
-        if resp["error"] is not None:
-            raise Exception(resp["error"])
+        if req.status_code in [400, 500]:
+            if resp["error"] is not None:
+                raise Exception(resp["error"])
         return resp
 
     # Campaign Methods
