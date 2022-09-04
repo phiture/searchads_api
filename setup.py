@@ -1,10 +1,10 @@
-from setuptools import setup
 import setuptools
+from setuptools import setup
 
 setup(
     name='searchads_api',
     description='Apple Searchads API non-official python library',
-    version='1.6.2',
+    version='1.6.3',
     url='https://github.com/phiture/searchads_api',
     author='Abdul Majeed Alkattan',
     author_email='alkattan@phiture.com',
@@ -31,6 +31,6 @@ version 1.2 refresh access_tokn only when needed
 version 1.5 handles API error with Exception
 version 1.5.3 fixed token update issue
 version 1.6 added new product page, reporting, and Ad endpoints. Deprecated creatives endpoints
+version 1.6.3 includes new bug fixes
     """,
-    
-    )
+)
