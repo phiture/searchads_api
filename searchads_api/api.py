@@ -170,7 +170,7 @@ class SearchAdsAPI:
             print(req.url)
             print(req.text)
         resp = req.json()
-        # raise an error
+        # raise an error 
         if resp.get("error") is not None:
             raise Exception(resp["error"])
         return resp
@@ -1329,16 +1329,15 @@ class SearchAdsAPI:
         )
         return res
 
-    def get_all_ads(self, campaignId, adgroupId, adId):
+    def get_all_ads(self, campaignId, adgroupId):
         """
         Fetches all ads assigned to an ad group.
 
         campaignId: int, (Required) Your Campaign Id Use Get a Campaign or Get All Campaigns to obtain your adamId and correlate it to the correct campaign.
         adgroupId: int,  (Required) A unique string to identify an adgroup
         """
-        res = self.api_call(
-            f"campaigns/{campaignId}/adgroups/{adgroupId}/ads/{adId}", method="GET"
-        )
+        res = self.api_call(f"campaigns/{campaignId}/adgroups/{adgroupId}/ads",
+                            method="GET")
         return res
 
     def update_an_ad(self, campaignId, adgroupId, adId, name, status):
