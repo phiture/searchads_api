@@ -352,6 +352,7 @@ create a certs directory inside of your project folder, or create a different ce
 
 # Impression share reports
 - Create an impression share report example
+         
          conditions = [
          {
              "field": "countryOrRegion",
@@ -362,6 +363,7 @@ create a certs directory inside of your project folder, or create a different ce
              ]
          }
          ]
+         
          #res = api.impression_share_reports(start_date="2023-01-01", end_date="2023-01-20", conditions=conditions)
 
 - Get a list of all impression share reports
