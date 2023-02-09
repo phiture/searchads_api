@@ -378,5 +378,13 @@ create a certs directory inside of your project folder, or create a different ce
 ## Changelog
 
 * version 1.7.1 added impression share reports and new find methods along product pages to match Searchads API version 4.7
-* version 1.5.2 fixed a bug in token refresh due to wrong status code
+* version 1.6.3 New bug fixes
+* version 1.6.1 added new product page, reporting, and Ad endpoints. Deprecated creatives endpoints
+* version 1.5.3 fixed token update issue
 * version 1.5.3 deprecated creativesets methods from Apple Search Ads API v4
+* version 1.5.2 fixed a bug in token refresh due to wrong status code
+* version 1.5.1 handles API error with Exception
+* version 1.2.1 refresh access_tokn only when needed
+* version 1.1.1 added support for the v4 of the Apple Search Ads API
+* version 0.7.1 fixed some issues with granularity
+* version 0.1.1 Added granularity level reports

@@ -2049,11 +2049,11 @@ class SearchAdsAPI:
                     "name": name,
                     "startTime": start_date,
                     "endTime": end_date,
-                    "granularity": granularity,
-                    "selector": {
-                        "conditions": conditions,
-                    }, 
+                    "granularity": granularity, 
+                    
                 }
+                if len(conditions) > 0:
+                    data["selector"] = {"conditions" :conditions}
                 if date_range is not None:
                     data["dateRange"] = date_range
 
