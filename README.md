@@ -349,7 +349,32 @@ create a certs directory inside of your project folder, or create a different ce
 
 # Product Pages methods
 
+
+# Impression share reports
+- Create an impression share report example
+         conditions = [
+         {
+             "field": "countryOrRegion",
+             "operator": "IN",
+             "values": [
+             "US",
+             "IN"
+             ]
+         }
+         ]
+         #res = api.impression_share_reports(start_date="2023-01-01", end_date="2023-01-20", conditions=conditions)
+
+- Get a list of all impression share reports
+
+         res = api.get_all_impression_share_reports()
+
+- Get a single impression share report using report ID
+
+         res = api.get_single_impression_share_report(12345)
+
+
 ## Changelog
 
+* version 1.7.0 added impression share reports and new find methods along product pages to match Searchads API version 4.7
 * version 1.5.2 fixed a bug in token refresh due to wrong status code
 * version 1.5.3 deprecated creativesets methods from Apple Search Ads API v4

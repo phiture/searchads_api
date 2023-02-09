@@ -85,7 +85,10 @@ class SearchAdsAPI:
             )
 
             # return client_secret
-            access_token = result.json()["access_token"]
+            result_json = result.json()
+            if self.verbose:
+                print(result_json)
+            access_token = result_json["access_token"]
             # set global access token
             self.access_token = access_token
         else:
@@ -324,6 +327,22 @@ class SearchAdsAPI:
         Deletes a specific campaign using the campaign identifier.
         """
         res = self.api_call("campaigns/{}".format(campaign_id), method="DELETE")
+        return res
+
+    # Budget order methods
+
+    def get_budget_order(self, boId):
+        """
+        Fetches a specific budget order using a budget order identifier.
+        """
+        res = self.api_call(f"budgetorders/{boId}", method="GET")["data"]
+        return res
+
+    def get_all_budget_orders(self):
+        """
+        Fetches all assigned budget orders for an organization.
+        """
+        res = self.api_call(f"budgetorders", method="GET")["data"]
         return res
 
     # Adgroup Methods
@@ -659,6 +678,7 @@ class SearchAdsAPI:
         return res
 
     # Targeting Keyword Methods
+
     def add_targeting_keywords(self, campaign_id, adgroup_id, keywords):
         """
         Creates targeting keywords to use in ad groups.
@@ -773,7 +793,8 @@ class SearchAdsAPI:
     def update_targeting_keywords(self, campaign_id, adgroup_id, keywords):
         """
         Updates targeting keywords used in ad groups.
-        [{
+        Here is an example keywords list
+        keywords = [{
             "id": 291202529,
             "status": "PAUSED",
             "bidAmount": {
@@ -791,14 +812,32 @@ class SearchAdsAPI:
         }]
         """
         res = self.api_call(
-            "campaigns/{}/adgroups/{}/targetingkeywords/bulk".format(
-                campaign_id, adgroup_id
-            ),
+            f"campaigns/{campaign_id}/adgroups/{adgroup_id}/targetingkeywords/bulk",
             json_data=keywords,
             method="PUT",
         )
         return res
 
+    def delete_targeting_keyword(self, campaign_id, adgroup_id, keyword_id):
+        """
+        Deletes a targeting keyword in an ad group.
+        """
+        res = self.api_call(
+            f"campaigns/{campaign_id}/adgroups/{adgroup_id}/targetingkeywords/{keyword_id}",
+            method="DELETE",
+        )
+        return res
+
+    def delete_targeting_keywords(self, campaign_id, adgroup_id):
+        """
+        Deletes targeting keywords from ad groups.
+        """
+        res = self.api_call(
+            f"campaigns/{campaign_id}/adgroups/{adgroup_id}/targetingkeywords/delete/bulk",
+            method="POST",
+        )
+        return res   
+     
     # Campaign Negative Keyword Methods
 
     def add_campaign_negative_keywords(self, campaign_id, keywords):
@@ -821,6 +860,49 @@ class SearchAdsAPI:
         )
         return res
 
+    def find_campaign_negative_keywords(
+        self,
+        campaign_id,
+        sort_field="id",
+        sort_order="ASCENDING",
+        conditions=[],
+        limit=1000,
+        offset=0,
+    ):
+        """
+        Fetches negative keywords for campaigns.
+        {
+            "pagination": {
+                "offset": 0,
+                "limit": 1000
+            },
+            "orderBy": [{
+                "field": "id",
+                "sortOrder": "ASCENDING"
+            }],
+            "conditions": [{
+                "field": "matchType",
+                "operator": "EQUALS",
+                "values": [
+                    "BROAD"
+                ]
+            }]
+        }
+        Conditions Example:
+        {"field": "matchType","operator": "EQUALS","values": ["BROAD"]}
+        """
+        data = {
+            "pagination": {"offset": offset, "limit": limit},
+            "orderBy": [{"field": sort_field, "sortOrder": sort_order}],
+            "conditions": conditions,
+        }
+        res = self.api_call(
+            f"campaigns/{campaign_id}/negativekeywords/find",
+            json_data=data,
+            method="POST",
+        )
+        return res
+    
     def get_campaign_negative_keyword(self, campaign_id, negative_keyword_id):
         """
         Gets a campaign negative keyword.
@@ -888,6 +970,7 @@ class SearchAdsAPI:
         return res
 
     # Adgroup Negative Keyword Methods
+
     def add_adgroup_negative_keywords(self, campaign_id, adgroup_id, keywords):
         """
         Adds multiple adGroup negative keywords.
@@ -910,6 +993,49 @@ class SearchAdsAPI:
         )
         return res
 
+    def find_adgroup_negative_keywords(
+        self,
+        campaign_id,
+        sort_field="id",
+        sort_order="ASCENDING",
+        conditions=[],
+        limit=1000,
+        offset=0,
+    ):
+        """
+        Fetches negative keywords in a campaign’s ad groups.
+        {
+            "pagination": {
+                "offset": 0,
+                "limit": 1000
+            },
+            "orderBy": [{
+                "field": "id",
+                "sortOrder": "ASCENDING"
+            }],
+            "conditions": [{
+                "field": "matchType",
+                "operator": "EQUALS",
+                "values": [
+                    "BROAD"
+                ]
+            }]
+        }
+        Conditions Example:
+        {"field": "matchType","operator": "EQUALS","values": ["BROAD"]}
+        """
+        data = {
+            "pagination": {"offset": offset, "limit": limit},
+            "orderBy": [{"field": sort_field, "sortOrder": sort_order}],
+            "conditions": conditions,
+        }
+        res = self.api_call(
+            f"campaigns/{campaign_id}/adgroups/negativekeywords/find",
+            json_data=data,
+            method="POST",
+        )
+        return res
+    
     def get_adgroup_negative_keyword(
         self, campaign_id, adgroup_id, negative_keyword_id
     ):
@@ -1749,6 +1875,78 @@ class SearchAdsAPI:
             limit=limit,
         )
 
+    def impression_share_reports(
+        self,
+        start_date,
+        end_date,
+        date_range=None,
+        name="impression_share_API_report_example_1",
+        sort_field="adamId",
+        sort_order="ASCENDING",
+        conditions=[],
+        return_records_with_no_metrics=True,
+        return_row_totals=False,
+        return_grand_totals=False,
+        granularity="DAILY",
+        group_by=None,
+        offset=0,
+        limit=1000,
+    ):
+        """
+        Obtain a report ID.
+        
+        The date range of the report request. A date range is required only when using WEEKLY granularity.
+        dateRange Possible values: LAST_WEEK, LAST_2_WEEKS, LAST_4_WEEKS
+        granularity Possible values: DAILY, WEEKLY
+        conditions example
+        {
+            "field": "countryOrRegion",
+            "operator": "IN",
+            "values": [
+            "US",
+            "IN"
+            ]
+        }
+        """
+        return self._get_data(
+            data_type="impression_share_report",
+            name=name,
+            date_range=date_range,
+            start_date=start_date,
+            end_date=end_date,
+            sort_field=sort_field,
+            sort_order=sort_order,
+            conditions=conditions,
+            no_metrics=return_records_with_no_metrics,
+            return_row_totals=return_row_totals,
+            return_grand_totals=return_grand_totals,
+            granularity=granularity,
+            group_by=group_by,
+            offset=offset,
+            limit=limit,
+        )
+
+    def get_single_impression_share_report(self, report_id):
+        """
+        Returns a single Impression Share report containing metrics and metadata.
+        """
+        res = self.api_call(
+            f"custom-reports/{report_id}/", method="GET"
+        )
+        return res
+    
+    def get_all_impression_share_reports(self, field="creationTime", limit=20, offset=0, sort_order="DESCENDING"):
+        """
+        Returns all Impression Share reports containing metrics and metadata.
+        """
+        data = {
+            "offset": offset, "limit": limit, "field": field, "sortOrder": sort_order 
+        }
+        res = self.api_call(
+            f"custom-reports", params=data, method="GET"
+        )
+        return res
+
     def _get_data(
         self,
         data_type,
@@ -1762,12 +1960,15 @@ class SearchAdsAPI:
         return_grand_totals,
         offset,
         limit,
+        date_range = None, # only for the impression share report
+        name = None, # only for the impression share report
         granularity=None,
         campaignId=None,
         adgroupId=None,
         group_by=None,
     ):
         """
+        This is a helper function
         Request driver
         granularity Possible values: MONTHLY, WEEKLY, DAILY, HOURLY
         """
@@ -1782,6 +1983,7 @@ class SearchAdsAPI:
                 print("return_grand_totals and return_row_totals must be False")
                 return None
         while True:
+            # Use this data schema for all reports except of impression share
             data = {
                 "startTime": start_date,
                 "endTime": end_date,
@@ -1799,6 +2001,7 @@ class SearchAdsAPI:
                 data["granularity"] = granularity
             if group_by is not None:
                 data["groupBy"] = [group_by]
+            
             if data_type == "campaigns":
                 res = self.api_call("reports/campaigns", json_data=data, method="POST")
             elif data_type == "adgroups":
@@ -1841,6 +2044,27 @@ class SearchAdsAPI:
                     json_data=data,
                     method="POST",
                 )
+            elif data_type == "impression_share_report":
+                data = {
+                    "name": name,
+                    "startTime": start_date,
+                    "endTime": end_date,
+                    "granularity": granularity,
+                    "selector": {
+                        "conditions": conditions,
+                    }, 
+                }
+                if date_range is not None:
+                    data["dateRange"] = date_range
+
+                res = self.api_call(
+                    f"custom-reports",
+                    json_data=data,
+                    method="POST",
+                )
+                if res is None:
+                    return None
+                return res["data"]
             else:
                 print("Unknown request type", data_type)
             if res is None:
