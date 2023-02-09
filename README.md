@@ -375,6 +375,6 @@ create a certs directory inside of your project folder, or create a different ce
 
 ## Changelog
 
-* version 1.7.0 added impression share reports and new find methods along product pages to match Searchads API version 4.7
+* version 1.7.1 added impression share reports and new find methods along product pages to match Searchads API version 4.7
 * version 1.5.2 fixed a bug in token refresh due to wrong status code
 * version 1.5.3 deprecated creativesets methods from Apple Search Ads API v4

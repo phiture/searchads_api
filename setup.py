@@ -4,7 +4,7 @@ from setuptools import setup
 setup(
     name='searchads_api',
     description='Apple Searchads API non-official python library',
-    version='1.7.0',
+    version='1.7.1',
     url='https://github.com/phiture/searchads_api',
     author='Abdul Majeed Alkattan',
     author_email='alkattan@phiture.com',
@@ -23,16 +23,42 @@ In order to facilitate the usage of the Apple Search Ads API Phiture's Engineers
 
 Read the docs on github.
 
+Example Usage:
+
+## Setup for v4 of the library
+
+create a certs directory inside of your project folder, or create a different certs directory and specify it using the certificates_dir_path argument.
+
+         api = SearchAdsAPI(2134535, "public.pem","private.key", 
+         client_id="SEARCHADS.07875add-f6cd-4111-9c38-b84501d557c8",
+         team_id="SEARCHADS.07879add-d6cd-4111-9c38-b84501d527c8",
+         key_id="78a167b1-e423-4ab4-bcd1-8be75a4d7b7e", verbose=True)
+
+### Campaign Methods
+
+- Create a new campaign
+
+         res = api.create_campaign(1433439534, ['AU'], "test", 1, 1, "EUR")
+
 Backlog
-Added granularity level reports
+
+version 0.1 Added granularity level reports
+
 version 0.7 fixed some issues with granularity
+
 version 1.1 added support for the v4 of the Apple Search Ads API
+
 version 1.2 refresh access_tokn only when needed
+
 version 1.5 handles API error with Exception
+
 version 1.5.3 fixed token update issue
+
 version 1.6 added new product page, reporting, and Ad endpoints. Deprecated creatives endpoints
+
 version 1.6.3 includes new bug fixes
-version 1.7.0 added impression share reports and new find methods along product pages to match Searchads API version 4.7
+
+version 1.7.1 added impression share reports and new find methods along product pages to match Searchads API version 4.7
 
     """,
 )
