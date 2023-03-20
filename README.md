@@ -377,7 +377,7 @@ create a certs directory inside of your project folder, or create a different ce
 
 ## Changelog
 
-* version 1.7.5 fixed an issue with token update
+* version 1.7.6 fixed an issue with token update
 * version 1.7.1 added impression share reports and new find methods along product pages to match Searchads API version 4.7
 * version 1.6.3 New bug fixes
 * version 1.6.1 added new product page, reporting, and Ad endpoints. Deprecated creatives endpoints

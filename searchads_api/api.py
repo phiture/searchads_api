@@ -176,6 +176,7 @@ class SearchAdsAPI:
                 # echo new token
                 print(f"t={t}, Token Renewed: {access_token}")
                 continue
+            break
 
         # Convert the response to JSON
         resp = req.json()
