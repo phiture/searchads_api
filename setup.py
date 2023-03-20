@@ -4,13 +4,13 @@ from setuptools import setup
 setup(
     name='searchads_api',
     description='Apple Searchads API non-official python library',
-    version='1.7.2',
+    version='1.7.5',
     url='https://github.com/phiture/searchads_api',
     author='Abdul Majeed Alkattan',
     author_email='alkattan@phiture.com',
     packages=["searchads_api"], 
     keywords=['python','searchads','library'],
-    install_requires=['requests>=2.28.2', 'PyJWT==2.6.0', 'cryptography==39.0.1'],
+    install_requires=['requests>=2.28.1', 'PyJWT==2.6.0', 'cryptography==36.0.2'],
     long_description="""
 
 # About Phiture
@@ -61,5 +61,6 @@ version 1.6.3 includes new bug fixes
 
 version 1.7.1 added impression share reports and new find methods along product pages to match Searchads API version 4.7
 
+version 1.7.5 fixed an issue with token update
     """,
 )

@@ -113,67 +113,73 @@ class SearchAdsAPI:
         """
         Generic API call function
         """
-        url = "https://api.searchads.apple.com/api/{}"
-        # choose between using a proxy or the public ip
-        if self.session is None:
-            caller = requests
-        else:
-            caller = self.session
-        # find the certicates path
-        pem = self.path + self.pem
-        key = self.path + self.key
+        # Try two times to make the request
+        for t in range(2):
+            # choose between using a proxy or the public ip
+            if self.session is None:
+                caller = requests
+            else:
+                caller = self.session
+            # find the certicates path
+            pem = self.path + self.pem
+            key = self.path + self.key
 
-        kwargs = {
-            "headers": headers,
-        }
-        # if v3 is being used
-        if self.client_id is None:
-            kwargs["cert"] = (pem, key)
-        if json_data:
-            kwargs["json"] = json_data
-        kwargs["params"] = dict()
-        # add the limit if it applies
-        if limit:
-            kwargs["params"]["limit"] = limit
-        # add the offset
-        if offset:
-            kwargs["params"]["offset"] = offset
-        # add the org_id header in v3
-        if self.org_id:
-            kwargs["headers"]["Authorization"] = f"orgId={self.org_id}"
-        # only if using Search Ads API v4
-        if self.key_id is not None and self.api_version == "v4":
-            access_token = self.get_access_token_from_client_secret(key)
-            kwargs["headers"]["Authorization"] = f"Bearer {access_token}"
-            kwargs["headers"]["X-AP-Context"] = f"orgId={self.org_id}"
-        kwargs["params"].update(params)
-        api_endpoint = "{}/{}".format(self.api_version, api_endpoint)
-        url = url.format(api_endpoint)
-        if method == "get" or method == "GET":
-            req = caller.get(url, **kwargs)
-        elif method == "post" or method == "POST":
-            req = caller.post(url, **kwargs)
-        elif method == "put" or method == "PUT":
-            req = caller.put(url, **kwargs)
-        elif method == "delete" or method == "DELETE":
-            req = caller.delete(url, **kwargs)
-        if (
-            req.status_code == 401 or "Expired Token:" in req.text
-        ) and self.api_version == "v4":
-            print("Update the token due to expiration")
-            # make it none
-            self.access_token = None
-            # Get a new token
-            access_token = self.get_access_token_from_client_secret(key)
-            # echo new token
-            print(access_token)
+            kwargs = {
+                "headers": headers,
+            }
+            # if v3 is being used
+            if self.client_id is None:
+                kwargs["cert"] = (pem, key)
+            if json_data:
+                kwargs["json"] = json_data
+            kwargs["params"] = dict()
+            # add the limit if it applies
+            if limit:
+                kwargs["params"]["limit"] = limit
+            # add the offset
+            if offset:
+                kwargs["params"]["offset"] = offset
+            # add the org_id header in v3
+            if self.org_id:
+                kwargs["headers"]["Authorization"] = f"orgId={self.org_id}"
+            # only if using Search Ads API v4
+            if self.key_id is not None and self.api_version == "v4":
+                access_token = self.get_access_token_from_client_secret(key)
+                kwargs["headers"]["Authorization"] = f"Bearer {access_token}"
+                kwargs["headers"]["X-AP-Context"] = f"orgId={self.org_id}"
+            kwargs["params"].update(params)
+            path = f"{self.api_version}/{api_endpoint}"
+            url = f"https://api.searchads.apple.com/api/{path}"
+            if method == "get" or method == "GET":
+                req = caller.get(url, **kwargs)
+            elif method == "post" or method == "POST":
+                req = caller.post(url, **kwargs)
+            elif method == "put" or method == "PUT":
+                req = caller.put(url, **kwargs)
+            elif method == "delete" or method == "DELETE":
+                req = caller.delete(url, **kwargs)
+            
+            if self.verbose:
+                print(req.status_code)
+                print(req.url)
+                print(req.text)
 
-        if self.verbose:
-            print(req.status_code)
-            print(req.url)
-            print(req.text)
+            # Renew token on expiration
+            if (
+                req.status_code == 401 or "Expired Token:" in req.text
+            ) and self.api_version == "v4":
+                print("Update the token due to expiration")
+                # make it none
+                self.access_token = None
+                # Get a new token
+                access_token = self.get_access_token_from_client_secret(key)
+                # echo new token
+                print(f"t={t}, Token Renewed: {access_token}")
+                continue
+
+        # Convert the response to JSON
         resp = req.json()
-        # raise an error 
+        # raise an error if we still have an error
         if resp.get("error") is not None:
             raise Exception(resp["error"])
         return resp
