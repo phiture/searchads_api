@@ -4,13 +4,13 @@ from setuptools import setup
 setup(
     name='searchads_api',
     description='Apple Searchads API non-official python library',
-    version='1.7.7',
+    version='1.7.8',
     url='https://github.com/phiture/searchads_api',
     author='Abdul Majeed Alkattan',
     author_email='alkattan@phiture.com',
     packages=["searchads_api"], 
     keywords=['python','searchads','library'],
-    install_requires=['requests>=2.28.1', 'PyJWT==2.6.0', 'cryptography==36.0.2'],
+    install_requires=['requests>=2.31.0', 'PyJWT==2.8.0', 'cryptography==41.0.2'],
     long_description="""
 
 # About Phiture
@@ -20,7 +20,12 @@ http://phiture.com is a Berlin-based mobile growth consultancy working with the 
 
 # Apple Searchads API Library in Python
 
-In order to facilitate the usage of the Apple Search Ads API Phiture's Engineers have built a library in Python which allows users to manage campaigns, ad groups, keywords and creative sets. This library only requires intermediate Python skills and therefore makes it possible not only for Engineers but also for Data Analysts and Apple Search Ads Consultants to work with it.  While the library is extensive it is not complete and users are encouraged to commit suggestions.
+In order to facilitate the usage of the Apple Search Ads API Phiture's Engineers 
+have built a library in Python which allows users to manage campaigns, ad groups, 
+keywords and creative sets. This library only requires intermediate Python skills 
+and therefore makes it possible not only for Engineers but also for Data Analysts 
+and Apple Search Ads Consultants to work with it.  
+While the library is extensive it is not complete and users are encouraged to commit suggestions.
 
 Read the docs on github.
 
@@ -41,7 +46,7 @@ create a certs directory inside of your project folder, or create a different ce
 
          res = api.create_campaign(1433439534, ['AU'], "test", 1, 1, "EUR")
 
-Backlog
+## Changelog
 
 version 0.1.1 Added granularity level reports
 
@@ -64,5 +69,7 @@ version 1.7.1 added impression share reports and new find methods along product 
 version 1.7.6 fixed an issue with token update
 
 version 1.7.7 fixed an issue update_campaign
+
+version 1.7.8 updated the dependencies
     """,
 )
