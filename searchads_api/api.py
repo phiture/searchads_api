@@ -5,6 +5,7 @@ import jwt
 import requests
 
 
+# Changed
 class SearchAdsAPI:
     def __init__(
         self,
@@ -158,7 +159,7 @@ class SearchAdsAPI:
                 req = caller.put(url, **kwargs)
             elif method == "delete" or method == "DELETE":
                 req = caller.delete(url, **kwargs)
-            
+
             if self.verbose:
                 print(req.status_code)
                 print(req.url)
@@ -463,7 +464,8 @@ class SearchAdsAPI:
             "campaignId": campaign_id,
             "name": adgroup_name,
             "automatedKeywordsOptIn": automated_keywords_opt_in,
-            "defaultCpcBid": {"amount": "{}".format(cpc_bid), "currency": currency},
+            "pricingModel": "CPC",
+            "defaultBidAmount": {"amount": "{}".format(cpc_bid), "currency": currency},
             "targetingDimensions": dimensions,
             "orgId": self.org_id,
         }
@@ -656,7 +658,7 @@ class SearchAdsAPI:
         if cpa_goal is not None:
             data["cpaGoal"] = {"amount": "{}".format(cpa_goal), "currency": currency}
         if cpc_bid is not None:
-            data["defaultCpcBid"] = {
+            data["defaultBidAmount"] = {
                 "amount": "{}".format(cpc_bid),
                 "currency": currency,
             }
@@ -843,8 +845,8 @@ class SearchAdsAPI:
             f"campaigns/{campaign_id}/adgroups/{adgroup_id}/targetingkeywords/delete/bulk",
             method="POST",
         )
-        return res   
-     
+        return res
+
     # Campaign Negative Keyword Methods
 
     def add_campaign_negative_keywords(self, campaign_id, keywords):
@@ -909,7 +911,7 @@ class SearchAdsAPI:
             method="POST",
         )
         return res
-    
+
     def get_campaign_negative_keyword(self, campaign_id, negative_keyword_id):
         """
         Gets a campaign negative keyword.
@@ -1042,7 +1044,7 @@ class SearchAdsAPI:
             method="POST",
         )
         return res
-    
+
     def get_adgroup_negative_keyword(
         self, campaign_id, adgroup_id, negative_keyword_id
     ):
@@ -1469,8 +1471,9 @@ class SearchAdsAPI:
         campaignId: int, (Required) Your Campaign Id Use Get a Campaign or Get All Campaigns to obtain your adamId and correlate it to the correct campaign.
         adgroupId: int,  (Required) A unique string to identify an adgroup
         """
-        res = self.api_call(f"campaigns/{campaignId}/adgroups/{adgroupId}/ads",
-                            method="GET")
+        res = self.api_call(
+            f"campaigns/{campaignId}/adgroups/{adgroupId}/ads", method="GET"
+        )
         return res
 
     def update_an_ad(self, campaignId, adgroupId, adId, name, status):
@@ -1901,7 +1904,7 @@ class SearchAdsAPI:
     ):
         """
         Obtain a report ID.
-        
+
         The date range of the report request. A date range is required only when using WEEKLY granularity.
         dateRange Possible values: LAST_WEEK, LAST_2_WEEKS, LAST_4_WEEKS
         granularity Possible values: DAILY, WEEKLY
@@ -1937,21 +1940,22 @@ class SearchAdsAPI:
         """
         Returns a single Impression Share report containing metrics and metadata.
         """
-        res = self.api_call(
-            f"custom-reports/{report_id}/", method="GET"
-        )
+        res = self.api_call(f"custom-reports/{report_id}/", method="GET")
         return res
-    
-    def get_all_impression_share_reports(self, field="creationTime", limit=20, offset=0, sort_order="DESCENDING"):
+
+    def get_all_impression_share_reports(
+        self, field="creationTime", limit=20, offset=0, sort_order="DESCENDING"
+    ):
         """
         Returns all Impression Share reports containing metrics and metadata.
         """
         data = {
-            "offset": offset, "limit": limit, "field": field, "sortOrder": sort_order 
+            "offset": offset,
+            "limit": limit,
+            "field": field,
+            "sortOrder": sort_order,
         }
-        res = self.api_call(
-            f"custom-reports", params=data, method="GET"
-        )
+        res = self.api_call(f"custom-reports", params=data, method="GET")
         return res
 
     def _get_data(
@@ -1967,8 +1971,8 @@ class SearchAdsAPI:
         return_grand_totals,
         offset,
         limit,
-        date_range = None, # only for the impression share report
-        name = None, # only for the impression share report
+        date_range=None,  # only for the impression share report
+        name=None,  # only for the impression share report
         granularity=None,
         campaignId=None,
         adgroupId=None,
@@ -2008,7 +2012,7 @@ class SearchAdsAPI:
                 data["granularity"] = granularity
             if group_by is not None:
                 data["groupBy"] = [group_by]
-            
+
             if data_type == "campaigns":
                 res = self.api_call("reports/campaigns", json_data=data, method="POST")
             elif data_type == "adgroups":
@@ -2056,11 +2060,10 @@ class SearchAdsAPI:
                     "name": name,
                     "startTime": start_date,
                     "endTime": end_date,
-                    "granularity": granularity, 
-                    
+                    "granularity": granularity,
                 }
                 if len(conditions) > 0:
-                    data["selector"] = {"conditions" :conditions}
+                    data["selector"] = {"conditions": conditions}
                 if date_range is not None:
                     data["dateRange"] = date_range
 
