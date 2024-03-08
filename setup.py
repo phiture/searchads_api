@@ -1,21 +1,20 @@
-import setuptools
 from setuptools import setup
 
 setup(
-    name='searchads_api',
-    description='Apple Searchads API non-official python library',
-    version='1.7.10',
-    url='https://github.com/phiture/searchads_api',
-    author='Abdul Majeed Alkattan',
-    author_email='alkattan@phiture.com',
-    packages=["searchads_api"], 
-    keywords=['python','searchads','library'],
-    install_requires=['requests', 'PyJWT==2.8.0', 'cryptography'],
+    name="searchads_api",
+    description="Apple Searchads API non-official python library",
+    version="1.7.11",
+    url="https://github.com/phiture/searchads_api",
+    author="Abdul Majeed Alkattan",
+    author_email="alkattan@phiture.com",
+    packages=["searchads_api"],
+    keywords=["python", "searchads", "library"],
+    install_requires=["requests", "pyjwt", "cryptography"],
     long_description="""
 
 # About Phiture
 
-http://phiture.com is a Berlin-based mobile growth consultancy working with the teams behind leading apps. Using the company’s industry-acclaimed Mobile Growth Stack as a strategic framework, Phiture team offers 4 key services: App Store Optimization, Apple Search Ads, User Retention services and Growth Consulting.
+http://phiture.com is a Berlin-based mobile growth consultancy working with the teams behind leading apps. Using the company’s industry-acclaimed Mobile Growth Stack as a strategic framework, Phiture team offers 4 key_file_name services: App Store Optimization, Apple Search Ads, User Retention services and Growth Consulting.
 
 
 # Apple Searchads API Library in Python
@@ -75,5 +74,7 @@ version 1.7.8 updated the dependencies
 version 1.7.9 always use the latest requests package
 
 version 1.7.10 always use the latest cryptography package
+
+version 1.7.11 added support for use cert and key as strings
     """,
 )

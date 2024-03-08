@@ -1,5 +1,6 @@
 import datetime
 import time
+from tempfile import NamedTemporaryFile
 
 import jwt
 import requests
@@ -9,8 +10,10 @@ class SearchAdsAPI:
     def __init__(
         self,
         org_id,
-        pem,
-        key,
+        pem_file_name=None,
+        key_file_name=None,
+        pem_content=None,
+        key_content=None,
         client_id=None,
         team_id=None,
         key_id=None,
@@ -22,22 +25,31 @@ class SearchAdsAPI:
         """
         Init API instance
         """
+        if not (pem_file_name or pem_content) or not (key_file_name or key_content):
+            raise ValueError(
+                "You must provide a pem_file_name and key_file_name or pem_content and key_content"
+            )
+
         self.org_id = org_id
-        self.pem = pem
-        self.key = key
-        self.session = session
-        self.path = certificates_dir_path
-        self.verbose = verbose
-        if key_id is None:
-            self.api_version = "v3"
-        else:
-            self.api_version = api_version
+        self.pem_file_name = pem_file_name
+        self.key_file_name = key_file_name
+        self.pem_content = pem_content
+        self.key_content = key_content
+        self.certificates_dir_path = certificates_dir_path
+
         self.client_id = client_id
         self.team_id = team_id
         self.key_id = key_id
+        self.api_version = api_version
+        if key_id is None:
+            self.api_version = "v3"
+
+        self.session = session
+        self.verbose = verbose
+
         self.access_token = None
 
-    def get_access_token_from_client_secret(self, key):
+    def get_access_token_from_client_secret(self, key_content):
         if self.access_token is None:
             audience = "https://appleid.apple.com"
             alg = "ES256"
@@ -59,14 +71,8 @@ class SearchAdsAPI:
             payload["exp"] = expiration_timestamp
             payload["iss"] = self.team_id
 
-            # Path to signed private key.
-            KEY_FILE = key
-
-            with open(KEY_FILE, "r") as key_file:
-                key = "".join(key_file.readlines())
-
             client_secret = jwt.encode(
-                payload=payload, headers=headers, algorithm=alg, key=key
+                payload=payload, headers=headers, algorithm=alg, key=key_content
             )
             # with open(f'{KEY_FILE}.txt', 'w') as output:
             #     output.write(client_secret.decode("utf-8"))
@@ -120,16 +126,33 @@ class SearchAdsAPI:
                 caller = requests
             else:
                 caller = self.session
-            # find the certicates path
-            pem = self.path + self.pem
-            key = self.path + self.key
+
+            if self.pem_content and self.key_content:
+                with NamedTemporaryFile(
+                    "w", delete=False
+                ) as cert_file, NamedTemporaryFile("w", delete=False) as key_file:
+                    cert_file.write(self.pem_content)
+                    key_file.write(self.key_content)
+                    cert_file.flush()
+                    key_file.flush()
+
+                    pem_file_path = cert_file.name
+                    key_file_path = key_file.name
+            else:
+                # find the certificates certificates_dir_path
+                pem_file_path = self.certificates_dir_path + self.pem_file_name
+                key_file_path = self.certificates_dir_path + self.key_file_name
+
+            with open(key_file_path, "r") as key_file:
+                key_content = "".join(key_file.readlines())
 
             kwargs = {
                 "headers": headers,
             }
+
             # if v3 is being used
             if self.client_id is None:
-                kwargs["cert"] = (pem, key)
+                kwargs["cert"] = (pem_file_path, key_file_path)
             if json_data:
                 kwargs["json"] = json_data
             kwargs["params"] = dict()
@@ -144,21 +167,21 @@ class SearchAdsAPI:
                 kwargs["headers"]["Authorization"] = f"orgId={self.org_id}"
             # only if using Search Ads API v4
             if self.key_id is not None and self.api_version == "v4":
-                access_token = self.get_access_token_from_client_secret(key)
+                access_token = self.get_access_token_from_client_secret(key_content)
                 kwargs["headers"]["Authorization"] = f"Bearer {access_token}"
                 kwargs["headers"]["X-AP-Context"] = f"orgId={self.org_id}"
             kwargs["params"].update(params)
             path = f"{self.api_version}/{api_endpoint}"
             url = f"https://api.searchads.apple.com/api/{path}"
-            if method == "get" or method == "GET":
+            if method.upper() == "GET":
                 req = caller.get(url, **kwargs)
-            elif method == "post" or method == "POST":
+            elif method.upper() == "POST":
                 req = caller.post(url, **kwargs)
-            elif method == "put" or method == "PUT":
+            elif method.upper() == "PUT":
                 req = caller.put(url, **kwargs)
-            elif method == "delete" or method == "DELETE":
+            elif method.upper() == "DELETE":
                 req = caller.delete(url, **kwargs)
-            
+
             if self.verbose:
                 print(req.status_code)
                 print(req.url)
@@ -172,7 +195,7 @@ class SearchAdsAPI:
                 # make it none
                 self.access_token = None
                 # Get a new token
-                access_token = self.get_access_token_from_client_secret(key)
+                access_token = self.get_access_token_from_client_secret(key_file_path)
                 # echo new token
                 print(f"t={t}, Token Renewed: {access_token}")
                 continue
@@ -843,8 +866,8 @@ class SearchAdsAPI:
             f"campaigns/{campaign_id}/adgroups/{adgroup_id}/targetingkeywords/delete/bulk",
             method="POST",
         )
-        return res   
-     
+        return res
+
     # Campaign Negative Keyword Methods
 
     def add_campaign_negative_keywords(self, campaign_id, keywords):
@@ -909,7 +932,7 @@ class SearchAdsAPI:
             method="POST",
         )
         return res
-    
+
     def get_campaign_negative_keyword(self, campaign_id, negative_keyword_id):
         """
         Gets a campaign negative keyword.
@@ -1042,7 +1065,7 @@ class SearchAdsAPI:
             method="POST",
         )
         return res
-    
+
     def get_adgroup_negative_keyword(
         self, campaign_id, adgroup_id, negative_keyword_id
     ):
@@ -1327,7 +1350,7 @@ class SearchAdsAPI:
         """
         Fetches metadata for a specific product page.
 
-        adamId: int, (Required) Your adamId in the resource path must match the adamId in your campaign. Use Get a Campaign or Get All Campaigns to obtain your adamId and correlate it to the correct campaign.
+        adamId: int, (Required) Your adamId in the resource certificates_dir_path must match the adamId in your campaign. Use Get a Campaign or Get All Campaigns to obtain your adamId and correlate it to the correct campaign.
         productPageId: int,  (Required) A unique string to identify a product page on App Store Connect. For example, 45812c9b-c296-43d3-c6a0-c5a02f74bf6e.
         """
         res = self.api_call(
@@ -1341,7 +1364,7 @@ class SearchAdsAPI:
         """
         Fetches product page locales by identifier.
 
-        adamId: int, (Required) Your adamId in the resource path must match the adamId in your campaign. Use Get a Campaign or Get All Campaigns to obtain your adamId and correlate it to the correct campaign.
+        adamId: int, (Required) Your adamId in the resource certificates_dir_path must match the adamId in your campaign. Use Get a Campaign or Get All Campaigns to obtain your adamId and correlate it to the correct campaign.
         productPageId: int,  (Required) A unique string to identify a product page on App Store Connect. For example, 45812c9b-c296-43d3-c6a0-c5a02f74bf6e.
         expand: Detailed app asset details of a device. Default: false
         languages: Filters by ISO alpha-2 country code, such as US.
@@ -1469,8 +1492,9 @@ class SearchAdsAPI:
         campaignId: int, (Required) Your Campaign Id Use Get a Campaign or Get All Campaigns to obtain your adamId and correlate it to the correct campaign.
         adgroupId: int,  (Required) A unique string to identify an adgroup
         """
-        res = self.api_call(f"campaigns/{campaignId}/adgroups/{adgroupId}/ads",
-                            method="GET")
+        res = self.api_call(
+            f"campaigns/{campaignId}/adgroups/{adgroupId}/ads", method="GET"
+        )
         return res
 
     def update_an_ad(self, campaignId, adgroupId, adId, name, status):
@@ -1901,7 +1925,7 @@ class SearchAdsAPI:
     ):
         """
         Obtain a report ID.
-        
+
         The date range of the report request. A date range is required only when using WEEKLY granularity.
         dateRange Possible values: LAST_WEEK, LAST_2_WEEKS, LAST_4_WEEKS
         granularity Possible values: DAILY, WEEKLY
@@ -1937,21 +1961,22 @@ class SearchAdsAPI:
         """
         Returns a single Impression Share report containing metrics and metadata.
         """
-        res = self.api_call(
-            f"custom-reports/{report_id}/", method="GET"
-        )
+        res = self.api_call(f"custom-reports/{report_id}/", method="GET")
         return res
-    
-    def get_all_impression_share_reports(self, field="creationTime", limit=20, offset=0, sort_order="DESCENDING"):
+
+    def get_all_impression_share_reports(
+        self, field="creationTime", limit=20, offset=0, sort_order="DESCENDING"
+    ):
         """
         Returns all Impression Share reports containing metrics and metadata.
         """
         data = {
-            "offset": offset, "limit": limit, "field": field, "sortOrder": sort_order 
+            "offset": offset,
+            "limit": limit,
+            "field": field,
+            "sortOrder": sort_order,
         }
-        res = self.api_call(
-            f"custom-reports", params=data, method="GET"
-        )
+        res = self.api_call(f"custom-reports", params=data, method="GET")
         return res
 
     def _get_data(
@@ -1967,8 +1992,8 @@ class SearchAdsAPI:
         return_grand_totals,
         offset,
         limit,
-        date_range = None, # only for the impression share report
-        name = None, # only for the impression share report
+        date_range=None,  # only for the impression share report
+        name=None,  # only for the impression share report
         granularity=None,
         campaignId=None,
         adgroupId=None,
@@ -2008,7 +2033,7 @@ class SearchAdsAPI:
                 data["granularity"] = granularity
             if group_by is not None:
                 data["groupBy"] = [group_by]
-            
+
             if data_type == "campaigns":
                 res = self.api_call("reports/campaigns", json_data=data, method="POST")
             elif data_type == "adgroups":
@@ -2056,11 +2081,10 @@ class SearchAdsAPI:
                     "name": name,
                     "startTime": start_date,
                     "endTime": end_date,
-                    "granularity": granularity, 
-                    
+                    "granularity": granularity,
                 }
                 if len(conditions) > 0:
-                    data["selector"] = {"conditions" :conditions}
+                    data["selector"] = {"conditions": conditions}
                 if date_range is not None:
                     data["dateRange"] = date_range
 

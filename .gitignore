@@ -93,3 +93,6 @@ ENV/
 # Rope project settings
 .ropeproject
 db.sqlite3
+
+# testing
+test_v4.py
