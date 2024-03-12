@@ -14,7 +14,7 @@ setup(
 
 # About Phiture
 
-http://phiture.com is a Berlin-based mobile growth consultancy working with the teams behind leading apps. Using the company’s industry-acclaimed Mobile Growth Stack as a strategic framework, Phiture team offers 4 key_file_name services: App Store Optimization, Apple Search Ads, User Retention services and Growth Consulting.
+http://phiture.com is a Berlin-based mobile growth consultancy working with the teams behind leading apps. Using the company’s industry-acclaimed Mobile Growth Stack as a strategic framework, Phiture team offers 4 key services: App Store Optimization, Apple Search Ads, User Retention services and Growth Consulting.
 
 
 # Apple Searchads API Library in Python

@@ -10,8 +10,8 @@ class SearchAdsAPI:
     def __init__(
         self,
         org_id,
-        pem_file_name=None,
-        key_file_name=None,
+        pem=None,
+        key=None,
         pem_content=None,
         key_content=None,
         client_id=None,
@@ -25,14 +25,14 @@ class SearchAdsAPI:
         """
         Init API instance
         """
-        if not (pem_file_name or pem_content) or not (key_file_name or key_content):
+        if not (pem or pem_content) or not (key or key_content):
             raise ValueError(
-                "You must provide a pem_file_name and key_file_name or pem_content and key_content"
+                "You must provide a pem and key or pem_content and key_content"
             )
 
         self.org_id = org_id
-        self.pem_file_name = pem_file_name
-        self.key_file_name = key_file_name
+        self.pem_file_name = pem
+        self.key_file_name = key
         self.pem_content = pem_content
         self.key_content = key_content
         self.certificates_dir_path = certificates_dir_path
@@ -195,7 +195,7 @@ class SearchAdsAPI:
                 # make it none
                 self.access_token = None
                 # Get a new token
-                access_token = self.get_access_token_from_client_secret(key_file_path)
+                access_token = self.get_access_token_from_client_secret(key_content)
                 # echo new token
                 print(f"t={t}, Token Renewed: {access_token}")
                 continue
