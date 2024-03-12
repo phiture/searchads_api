@@ -11,19 +11,49 @@ The official link to the searchads campaign management api is https://developer.
 
 ## Setup
 
-create a certs directory inside of your project folder, or create a different certs directory and specify it using the certificates_dir_path argument.
 
-         api = SearchAdsAPI(123456, "cert.pem", "cert.key", certificates_dir_path="certs/",verbose=False)
+### Using cert and key files
+Create a certs directory inside of your project folder, or create a different certs directory and specify it using the certificates_dir_path argument.
 
+```python
+PEM_FILE_PATH = "cert.pem"
+KEY_FILE_PATH = "cert.key"
+CERTIFICATES_DIR_PATH = "certs/"
 
-## Setup for v4 of the library
+api = SearchAdsAPI(
+    org_id=123456,
+    pem=PEM_FILE_PATH,
+    key=KEY_FILE_PATH,
+    certificates_dir_path=CERTIFICATES_DIR_PATH,
+    client_id="SEARCHADS.12345678-1234-1234-1234-123456789012",
+    team_id="SEARCHADS.12345678-1234-1234-1234-123456789012",
+    key_id="12345678-1234-1234-1234-123456789012",
+)
+```
 
-create a certs directory inside of your project folder, or create a different certs directory and specify it using the certificates_dir_path argument.
+### Using cert and key file strings
+```python
+PEM_FILE_CONTENT = """
+-----BEGIN PUBLIC KEY-----
+...
+-----END PUBLIC KEY-----
+"""
 
-         api = SearchAdsAPI(2134535, "public.pem","private.key", 
-         client_id="SEARCHADS.07875add-f6cd-4111-9c38-b84501d557c8",
-         team_id="SEARCHADS.07879add-d6cd-4111-9c38-b84501d527c8",
-         key_id="78a167b1-e423-4ab4-bcd1-8be75a4d7b7e", verbose=True)
+KEY_FILE_CONTENT = """
+-----BEGIN EC PRIVATE KEY-----
+...
+-----END EC PRIVATE KEY-----
+"""
+
+api = SearchAdsAPI(
+    org_id=123456,
+    pem_content=PEM_FILE_CONTENT,
+    key_content=KEY_FILE_CONTENT,
+    client_id="SEARCHADS.12345678-1234-1234-1234-123456789012",
+    team_id="SEARCHADS.12345678-1234-1234-1234-123456789012",
+    key_id="12345678-1234-1234-1234-123456789012",
+)
+```
 
 ## Available Methods
 
@@ -377,6 +407,7 @@ create a certs directory inside of your project folder, or create a different ce
 
 ## Changelog
 
+* version 1.7.11 added support for use cert and key as strings
 * version 1.7.10 always use the latest cryptography package
 * version 1.7.9 always use the latest requests package
 * version 1.7.7 fixed an issue update_campaign
