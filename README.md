@@ -22,8 +22,8 @@ CERTIFICATES_DIR_PATH = "certs/"
 
 api = SearchAdsAPI(
     org_id=123456,
-    pem_file_name=PEM_FILE_PATH,
-    key_file_name=KEY_FILE_PATH,
+    pem=PEM_FILE_PATH,
+    key=KEY_FILE_PATH,
     certificates_dir_path=CERTIFICATES_DIR_PATH,
     client_id="SEARCHADS.12345678-1234-1234-1234-123456789012",
     team_id="SEARCHADS.12345678-1234-1234-1234-123456789012",
