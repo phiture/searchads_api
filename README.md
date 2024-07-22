@@ -407,6 +407,7 @@ api = SearchAdsAPI(
 
 ## Changelog
 
+* version 1.7.12 added support for the v5 of the Apple Search Ads API
 * version 1.7.11 added support for use cert and key as strings
 * version 1.7.10 always use the latest cryptography package
 * version 1.7.9 always use the latest requests package
