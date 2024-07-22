@@ -18,7 +18,7 @@ class SearchAdsAPI:
         team_id=None,
         key_id=None,
         certificates_dir_path="certs/",
-        api_version="v4",
+        api_version="v5",
         session=None,
         verbose=False,
     ):
@@ -163,10 +163,10 @@ class SearchAdsAPI:
             if offset:
                 kwargs["params"]["offset"] = offset
             # add the org_id header in v3
-            if self.org_id:
+            if self.org_id and self.api_version == "v3":
                 kwargs["headers"]["Authorization"] = f"orgId={self.org_id}"
             # only if using Search Ads API v4
-            if self.key_id is not None and self.api_version == "v4":
+            if self.key_id is not None and self.api_version in ["v4", "v5"]:
                 access_token = self.get_access_token_from_client_secret(key_content)
                 kwargs["headers"]["Authorization"] = f"Bearer {access_token}"
                 kwargs["headers"]["X-AP-Context"] = f"orgId={self.org_id}"
