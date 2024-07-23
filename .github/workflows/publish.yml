@@ -1,0 +1,52 @@
+name: Publish Python Package
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x' # specify your desired Python version
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install setuptools wheel twine bump2version
+
+    - name: Bump version
+      run: bump2version patch  # or 'minor' or 'major' depending on the level of version bump you want
+
+    - name: Install GitHub CLI
+      run: sudo apt-get install gh
+
+    - name: Authenticate with GitHub CLI
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
+
+    - name: Create GitHub release
+      run: |
+        NEW_VERSION=$(python setup.py --version)
+        gh release create "v${NEW_VERSION}" --notes "Release version ${NEW_VERSION}"
+
+    - name: Build package
+      run: python setup.py sdist bdist_wheel
+
+    - name: Publish package
+      env:
+        TWINE_USERNAME: __token__
+        TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+      run: twine upload dist/*
+
+    - name: Clean up
+      run: rm -rf dist build *.egg-info
