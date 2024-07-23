@@ -31,18 +31,20 @@ jobs:
     - name: Bump version
       run: bump2version patch  # or 'minor' or 'major' depending on the level of version bump you want
 
-    - name: Install GitHub CLI
-      run: sudo apt-get install gh
-
-    - name: Authenticate with GitHub CLI
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
+    - name: Get bumped version
+      id: get_version
+      run: echo ::set-output name=VERSION::$(python setup.py --version)
 
     - name: Create GitHub release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        VERSION: ${{ steps.get_version.outputs.VERSION }}
       run: |
-        NEW_VERSION=$(python setup.py --version)
-        gh release create "v${NEW_VERSION}" --notes "Release version ${NEW_VERSION}"
+        curl -X POST \
+        -H "Authorization: token $GITHUB_TOKEN" \
+        -H "Accept: application/vnd.github.v3+json" \
+        https://api.github.com/repos/${{ github.repository }}/releases \
+        -d '{"tag_name":"v'${{ env.VERSION }}'","name":"v'${{ env.VERSION }}'","body":"Release version '${{ env.VERSION }}'"}'
 
     - name: Build package
       run: python setup.py sdist bdist_wheel
