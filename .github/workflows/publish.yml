@@ -32,13 +32,14 @@ jobs:
       run: bump2version patch  # or 'minor' or 'major' depending on the level of version bump you want
 
     - name: Get bumped version
-      id: get_version
-      run: echo ::set-output name=VERSION::$(python setup.py --version)
+          id: get_version
+          run: |
+            echo "VERSION=$(python setup.py --version)" >> $GITHUB_ENV
 
     - name: Create GitHub release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        VERSION: ${{ steps.get_version.outputs.VERSION }}
+        VERSION: ${{ env.VERSION }}
       run: |
         curl -X POST \
         -H "Authorization: token $GITHUB_TOKEN" \
