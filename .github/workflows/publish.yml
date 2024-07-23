@@ -18,6 +18,11 @@ jobs:
       with:
         python-version: '3.x' # specify your desired Python version
 
+    - name: Set up Git user
+      run: |
+        git config --global user.name "github-actions"
+        git config --global user.email "alkattan@phiture.com"
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
