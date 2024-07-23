@@ -49,11 +49,8 @@ jobs:
     - name: Build package
       run: python setup.py sdist bdist_wheel
 
-    - name: Publish package
-      env:
-        TWINE_USERNAME: __token__
-        TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-      run: twine upload dist/*
+    - name: Publish package to PyPI
+      run: twine upload -u __token__ -p ${{ secrets.SEARCHADS_API_PUBLISH_TOKEN }}dist/*
 
     - name: Clean up
       run: rm -rf dist build *.egg-info
