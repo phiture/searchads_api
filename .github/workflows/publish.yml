@@ -21,7 +21,7 @@ jobs:
     - name: Set up Git user
       run: |
         git config --global user.name "github-actions"
-        git config --global user.email "alkattan@phiture.com"
+        git config --global user.email "github-actions@github.com"
 
     - name: Install dependencies
       run: |
@@ -32,9 +32,9 @@ jobs:
       run: bump2version patch  # or 'minor' or 'major' depending on the level of version bump you want
 
     - name: Get bumped version
-          id: get_version
-          run: |
-            echo "VERSION=$(python setup.py --version)" >> $GITHUB_ENV
+      id: get_version
+      run: |
+        echo "VERSION=$(python setup.py --version)" >> $GITHUB_ENV
 
     - name: Create GitHub release
       env:
@@ -50,8 +50,11 @@ jobs:
     - name: Build package
       run: python setup.py sdist bdist_wheel
 
-    - name: Publish package to PyPI
-      run: twine upload -u __token__ -p ${{ secrets.SEARCHADS_API_PUBLISH_TOKEN }}dist/*
+    - name: Publish package
+      env:
+        TWINE_USERNAME: __token__
+        TWINE_PASSWORD: ${{ secrets.SEARCHADS_API_PUBLISH_TOKEN }}
+      run: twine upload dist/*
 
     - name: Clean up
       run: rm -rf dist build *.egg-info
