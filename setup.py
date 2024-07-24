@@ -78,5 +78,7 @@ version 1.7.10 always use the latest cryptography package
 version 1.7.11 added support for use cert and key as strings
 
 version 1.7.12 added support for the v5 of the Apple Search Ads API
+
+version 1.7.13 fixed an issue with the timezone for Search Terms + Search Terms within Ad Groups (must be ORTZ - organization time zone)
     """,
 )

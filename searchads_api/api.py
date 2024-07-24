@@ -185,6 +185,7 @@ class SearchAdsAPI:
             if self.verbose:
                 print(req.status_code)
                 print(req.url)
+                print(kwargs)
                 print(req.text)
 
             # Renew token on expiration
@@ -2065,12 +2066,16 @@ class SearchAdsAPI:
                     method="POST",
                 )
             elif data_type == "searchterms":
+                if self.api_version == "v5":
+                    data["timeZone"] = "ORTZ"
                 res = self.api_call(
                     f"reports/campaigns/{campaignId}/searchterms",
                     json_data=data,
                     method="POST",
                 )
             elif data_type == "searchterms_adgroup":
+                if self.api_version == "v5":
+                    data["timeZone"] = "ORTZ"
                 res = self.api_call(
                     f"reports/campaigns/{campaignId}/adgroups/{adgroupId}/searchterms",
                     json_data=data,
