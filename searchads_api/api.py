@@ -21,6 +21,7 @@ class SearchAdsAPI:
         api_version="v5",
         session=None,
         verbose=False,
+        custom_headers=None,
     ):
         """
         Init API instance
@@ -46,6 +47,7 @@ class SearchAdsAPI:
 
         self.session = session
         self.verbose = verbose
+        self.custom_headers = custom_headers or {}
 
         self.access_token = None
 
@@ -146,8 +148,12 @@ class SearchAdsAPI:
             with open(key_file_path, "r") as key_file:
                 key_content = "".join(key_file.readlines())
 
+            # Merge custom headers with request headers
+            request_headers = headers.copy()
+            request_headers.update(self.custom_headers)
+
             kwargs = {
-                "headers": headers,
+                "headers": request_headers,
             }
 
             # if v3 is being used
@@ -1034,7 +1040,7 @@ class SearchAdsAPI:
         offset=0,
     ):
         """
-        Fetches negative keywords in a campaign’s ad groups.
+        Fetches negative keywords in a campaign's ad groups.
         {
             "pagination": {
                 "offset": 0,
