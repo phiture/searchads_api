@@ -3,7 +3,7 @@ from setuptools import setup
 setup(
     name="searchads_api",
     description="Apple Searchads API non-official python library",
-    version="1.7.14",
+    version="1.7.15",
     url="https://github.com/phiture/searchads_api",
     author="Abdul Majeed Alkattan",
     author_email="alkattan@phiture.com",
@@ -14,7 +14,7 @@ setup(
 
 # About Phiture
 
-http://phiture.com is a Berlin-based mobile growth consultancy working with the teams behind leading apps. Using the company’s industry-acclaimed Mobile Growth Stack as a strategic framework, Phiture team offers 4 key services: App Store Optimization, Apple Search Ads, User Retention services and Growth Consulting.
+http://phiture.com is a Berlin-based mobile growth consultancy working with the teams behind leading apps. Using the company's industry-acclaimed Mobile Growth Stack as a strategic framework, Phiture team offers 4 key services: App Store Optimization, Apple Search Ads, User Retention services and Growth Consulting.
 
 
 # Apple Searchads API Library in Python
@@ -80,5 +80,7 @@ version 1.7.11 added support for use cert and key as strings
 version 1.7.12 added support for the v5 of the Apple Search Ads API
 
 version 1.7.14 fixed an issue with the timezone for Search Terms + Search Terms within Ad Groups (must be ORTZ - organization time zone)
+
+version 1.7.15 added support for custom headers in API requests
     """,
 )
