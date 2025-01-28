@@ -407,7 +407,7 @@ api = SearchAdsAPI(
 
 ## Changelog
 
-* version 1.7.17 added support for custom headers in API requests
+* version 1.7.19 added support for custom headers in API requests
 * version 1.7.14 fixed an issue with the timezone for Search Terms + Search Terms within Ad Groups (must be ORTZ - organization time zone)
 * version 1.7.12 added support for the v5 of the Apple Search Ads API
 * version 1.7.11 added support for use cert and key as strings

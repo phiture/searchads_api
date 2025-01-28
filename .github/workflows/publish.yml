@@ -4,6 +4,17 @@ on:
   push:
     branches:
       - master
+  workflow_dispatch:
+    inputs:
+      bump_rule:
+        description: 'Version bump rule (major/minor/patch)'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
 
 jobs:
   build-and-publish:
@@ -11,17 +22,20 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
-        python-version: '3.x' # specify your desired Python version
+        python-version: '3.x'
 
     - name: Set up Git user
       run: |
-        git config --global user.name "github-actions"
-        git config --global user.email "github-actions@github.com"
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
     - name: Install dependencies
       run: |
@@ -29,7 +43,12 @@ jobs:
         pip install setuptools wheel twine bump2version
 
     - name: Bump version
-      run: bump2version patch  # or 'minor' or 'major' depending on the level of version bump you want
+      run: |
+        if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+          bump2version ${{ github.event.inputs.bump_rule }}
+        else
+          bump2version patch
+        fi
 
     - name: Get bumped version
       id: get_version
@@ -55,6 +74,11 @@ jobs:
         TWINE_USERNAME: __token__
         TWINE_PASSWORD: ${{ secrets.SEARCHADS_API_PUBLISH_TOKEN }}
       run: twine upload dist/*
+
+    - name: Push changes
+      run: |
+        git push
+        git push --tags
 
     - name: Clean up
       run: rm -rf dist build *.egg-info
