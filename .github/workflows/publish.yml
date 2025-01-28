@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - master
+    paths-ignore:
+      - '.bumpversion.cfg'
+      - 'setup.py'
   workflow_dispatch:
     inputs:
       bump_rule:
@@ -25,17 +28,22 @@ jobs:
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
-        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Install SSH key
+      uses: webfactory/ssh-agent@v0.8.0
+      with:
+        ssh-private-key: ${{ secrets.DEPLOY_KEY }}
+
+    - name: Set up Git
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git remote set-url origin git@github.com:${{ github.repository }}.git
 
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.x'
-
-    - name: Set up Git user
-      run: |
-        git config --global user.name "github-actions[bot]"
-        git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
     - name: Install dependencies
       run: |
@@ -54,6 +62,16 @@ jobs:
       id: get_version
       run: |
         echo "VERSION=$(python setup.py --version)" >> $GITHUB_ENV
+
+    - name: Commit changes
+      run: |
+        git add .bumpversion.cfg setup.py
+        git commit -m "Bump version: ${{ env.VERSION }}"
+
+    - name: Push changes
+      run: |
+        git push
+        git push --tags
 
     - name: Create GitHub release
       env:
@@ -74,11 +92,6 @@ jobs:
         TWINE_USERNAME: __token__
         TWINE_PASSWORD: ${{ secrets.SEARCHADS_API_PUBLISH_TOKEN }}
       run: twine upload dist/*
-
-    - name: Push changes
-      run: |
-        git push
-        git push --tags
 
     - name: Clean up
       run: rm -rf dist build *.egg-info
