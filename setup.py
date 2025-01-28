@@ -3,7 +3,7 @@ from setuptools import setup
 setup(
     name="searchads_api",
     description="Apple Searchads API non-official python library",
-    version="1.7.15",
+    version="1.7.17",
     url="https://github.com/phiture/searchads_api",
     author="Abdul Majeed Alkattan",
     author_email="alkattan@phiture.com",
@@ -81,6 +81,6 @@ version 1.7.12 added support for the v5 of the Apple Search Ads API
 
 version 1.7.14 fixed an issue with the timezone for Search Terms + Search Terms within Ad Groups (must be ORTZ - organization time zone)
 
-version 1.7.15 added support for custom headers in API requests
+version 1.7.17 added support for custom headers in API requests
     """,
 )
