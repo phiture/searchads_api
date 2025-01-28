@@ -96,3 +96,7 @@ db.sqlite3
 
 # testing
 test_v4.py
+
+# ignore virtual environment
+venv
+.venv

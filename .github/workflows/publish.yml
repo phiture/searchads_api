@@ -63,10 +63,10 @@ jobs:
       run: |
         echo "VERSION=$(python setup.py --version)" >> $GITHUB_ENV
 
-    - name: Commit changes
-      run: |
-        git add .bumpversion.cfg setup.py
-        git commit -m "Bump version: ${{ env.VERSION }}"
+#    - name: Commit changes
+#      run: |
+#        git add .bumpversion.cfg setup.py
+#        git commit -m "Bump version: ${{ env.VERSION }}"
 
     - name: Push changes
       run: |
